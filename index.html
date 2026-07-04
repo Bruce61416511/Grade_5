@@ -1,0 +1,1799 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>星际单词探险家 | 新版PEP五年级上册</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --sky:#4FC3F7;--sky-dark:#039BE5;--sky-light:#B3E5FC;
+  --green:#81C784;--green-dark:#43A047;--green-light:#C8E6C9;
+  --orange:#FFB74D;--orange-dark:#F57C00;--orange-light:#FFE0B2;
+  --yellow:#FFF176;--yellow-dark:#FDD835;
+  --bg-deep:#0D1B2A;--bg-space:#14283A;--bg-card:#1E3A50;
+  --text-main:#263238;--text-light:#78909C;--text-white:#ECEFF1;
+  --white:#FFF;--red-soft:#EF5350;--pink-soft:#F48FB1;
+  --shadow:0 4px 20px rgba(0,0,0,.15);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.25);
+  --radius:18px;--radius-sm:12px;--radius-lg:24px;
+  --font:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+  --btn-min:48px;
+}
+body{
+  font-family:var(--font);background:var(--bg-deep);
+  color:var(--text-white);overflow-x:hidden;min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;
+}
+.stars-layer{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.star-dot{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d,2s) infinite alternate var(--delay,0s)}
+@keyframes twinkle{to{opacity:.2;transform:scale(.6)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes bounceIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes cardFlipIn{0%{transform:rotateY(90deg);opacity:0}100%{transform:rotateY(0);opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(255,183,77,.5)}50%{box-shadow:0 0 20px rgba(255,183,77,.9)}}
+@keyframes laser{0%{transform:scaleY(0)}50%{transform:scaleY(1.2)}100%{transform:scaleY(1)}}
+@keyframes starPop{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.3) rotate(5deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes shieldBreak{0%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.2)}100%{opacity:0;transform:scale(.5)}}
+.nav-bar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(13,27,42,.94);backdrop-filter:blur(10px);padding:8px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.1);min-height:52px;flex-wrap:wrap}
+.nav-bar .nav-title{color:#fff;font-size:15px;font-weight:700;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-bar button{padding:6px 14px;border-radius:20px;border:none;font-size:13px;font-family:var(--font);cursor:pointer;font-weight:600;transition:all .2s;white-space:nowrap;min-height:36px}
+.nav-bar button:active{transform:scale(.95)}
+.nav-btn-home{background:var(--orange);color:#fff}
+.nav-btn-map{background:var(--sky-dark);color:#fff}
+.nav-btn-wrong{background:var(--red-soft);color:#fff}
+.nav-btn-badge{background:var(--green-dark);color:#fff}
+.nav-btn-sound{background:rgba(255,255,255,.15);color:#fff}
+.screen{display:none;padding:70px 20px 40px;min-height:100vh;position:relative;z-index:1}
+.screen.active{display:flex;flex-direction:column;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:14px 28px;border-radius:var(--radius);border:none;font-family:var(--font);font-size:17px;font-weight:700;cursor:pointer;transition:all .2s;min-width:var(--btn-min);min-height:var(--btn-min);text-align:center}
+.btn:active{transform:scale(.95)}
+.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:#fff;box-shadow:0 4px 14px rgba(245,124,0,.4)}
+.btn-sky{background:linear-gradient(135deg,var(--sky),var(--sky-dark));color:#fff;box-shadow:0 4px 14px rgba(3,155,229,.4)}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;box-shadow:0 4px 14px rgba(67,160,71,.4)}
+.btn-red{background:linear-gradient(135deg,var(--red-soft),#C62828);color:#fff}
+.btn-outline{background:transparent;border:3px solid var(--white);color:var(--white)}
+.btn-sm{padding:10px 20px;font-size:14px;min-height:40px}
+.btn-lg{padding:18px 40px;font-size:20px;min-height:56px}
+.btn:disabled{opacity:.45;pointer-events:none}
+.card{background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.08)}
+.welcome-screen{background:linear-gradient(180deg,#0B1622 0%,#14283A 30%,#1E4D6E 60%,#2878A0 85%,#4FC3F7 100%);justify-content:center;text-align:center}
+.welcome-screen.active{display:flex}
+.welcome-logo{font-size:64px;animation:float 3s ease-in-out infinite;margin-bottom:4px}
+.welcome-title{font-size:40px;font-weight:900;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.3);margin-bottom:4px;line-height:1.2}
+.welcome-sub{font-size:17px;color:rgba(255,255,255,.8);margin-bottom:8px}
+.welcome-rank{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 18px;border-radius:20px;font-size:15px;color:var(--yellow);margin-bottom:28px;font-weight:700}
+.map-screen{background:linear-gradient(180deg,#0D1B2A 0%,#15273B 100%)}
+/* 🎭 课文对话屏幕 */
+.dialogue-screen{background:linear-gradient(180deg,#0D1B2A 0%,#15273B 50%,#1E3A50 100%)}
+.dialogue-container{max-width:720px;width:100%;padding:0 4px}
+.dialogue-unit-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:4px;color:#FFD54F}
+.dialogue-unit-sub{text-align:center;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:20px}
+.dialogue-unit-select{display:flex;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.dialogue-unit-select button{padding:8px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#ccc;font-size:13px;cursor:pointer;font-family:var(--font);transition:all .2s}
+.dialogue-unit-select button.active{background:rgba(79,195,247,.25);border-color:var(--sky);color:#fff;font-weight:700}
+.dialogue-unit-select button:hover:not(.active){background:rgba(255,255,255,.12)}
+.dialogue-scene{margin-bottom:24px}
+.nav-btn-dialogue{background:linear-gradient(135deg,#CE93D8,#AB47BC);color:#fff}
+.dialogue-scene-title{font-size:13px;color:var(--sky-light);margin-bottom:10px;padding:4px 14px;border-left:3px solid var(--sky);border-radius:0 8px 8px 0;background:rgba(79,195,247,.08)}
+.dialogue-line{display:flex;align-items:flex-start;margin-bottom:8px;gap:10px;cursor:pointer;transition:all .15s;padding:6px 8px;border-radius:12px}
+.dialogue-line:hover{background:rgba(255,255,255,.04)}
+.dialogue-line:active{transform:scale(.985)}
+.dialogue-line.male{flex-direction:row}
+.dialogue-line.female{flex-direction:row-reverse}
+.dialogue-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06)}
+.dialogue-avatar.male-avatar{border-color:rgba(79,195,247,.5);background:rgba(79,195,247,.15)}
+.dialogue-avatar.female-avatar{border-color:rgba(244,143,177,.5);background:rgba(244,143,177,.15)}
+.dialogue-bubble{background:rgba(255,255,255,.07);border-radius:14px;padding:10px 14px;position:relative;flex:1;border:1px solid rgba(255,255,255,.08);transition:all .2s}
+.dialogue-bubble .speaker{font-size:10px;color:var(--sky-light);margin-bottom:2px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.dialogue-bubble .text{font-size:15px;color:#fff;line-height:1.55;letter-spacing:.3px}
+.dialogue-bubble .zh-text{font-size:11px;color:rgba(255,255,255,.42);margin-top:3px}
+.dialogue-line.playing .dialogue-bubble{background:rgba(255,183,77,.12);border-color:rgba(255,183,77,.35);box-shadow:0 0 14px rgba(255,183,77,.15)}
+.dialogue-line.playing .dialogue-avatar{box-shadow:0 0 10px rgba(255,183,77,.4);border-color:rgba(255,183,77,.6)}
+.dialogue-play-bar{display:flex;justify-content:center;gap:10px;margin-bottom:16px}
+.dialogue-play-bar button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:7px 18px;color:#ccc;font-size:13px;cursor:pointer;font-family:var(--font);transition:all .2s}
+.dialogue-play-bar button:hover{background:rgba(255,183,77,.15);border-color:rgba(255,183,77,.35);color:#FFB74D}
+.dialogue-play-bar button:active{transform:scale(.95)}
+.dialogue-play-bar .play-scene-btn{background:rgba(129,199,132,.12);border-color:rgba(129,199,132,.3);color:#81C784}
+.dialogue-play-bar .play-scene-btn:hover{background:rgba(129,199,132,.22);color:#A5D6A7}
+.dialogue-hint{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:rgba(255,255,255,.35);margin-top:16px}
+.dialogue-coming{text-align:center;padding:40px;color:rgba(255,255,255,.25);font-size:15px}
+.dialogue-coming .big-emoji{font-size:48px;display:block;margin-bottom:12px}
+.map-title{font-size:28px;font-weight:900;margin-bottom:8px;text-align:center}
+.map-sub{font-size:15px;color:var(--text-light);margin-bottom:24px;text-align:center}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;max-width:900px;width:100%}
+.planet-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:18px 14px;text-align:center;cursor:pointer;transition:all .25s;border:2px solid transparent;position:relative;overflow:hidden}
+.planet-card:hover{transform:translateY(-4px);border-color:var(--sky);box-shadow:0 8px 30px rgba(79,195,247,.3)}
+.planet-card.locked{opacity:.4;pointer-events:none;filter:grayscale(.6)}
+.planet-card.cleared{border-color:var(--green)}
+.planet-card.perfect{border-color:var(--yellow);animation:glow 2s infinite}
+.planet-emoji{font-size:40px;margin-bottom:6px}
+.planet-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.planet-stars{font-size:20px;letter-spacing:2px}
+.planet-stars .earned{color:var(--yellow)}
+.planet-stars .lost{color:rgba(255,255,255,.2)}
+.planet-badge{font-size:12px;color:var(--green);margin-top:4px;font-weight:600}
+
+.stage-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:600px}
+.stage-tab{padding:8px 16px;border-radius:20px;border:2px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-size:13px;font-family:var(--font);transition:all .2s;white-space:nowrap}
+.stage-tab:hover{border-color:rgba(255,255,255,.4);color:#fff}
+.stage-tab.active{background:var(--sky);border-color:var(--sky);color:#fff;font-weight:700}
+.stage-tab.locked{opacity:.4;pointer-events:none;color:rgba(255,255,255,.3)}
+.stage-tab .tab-star{font-size:11px;margin-left:2px}
+.flash-screen{background:linear-gradient(180deg,#0B1622,#1E3A50)}
+.flash-progress{width:100%;max-width:500px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.flash-progress .bar-bg{flex:1;height:10px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden}
+.flash-progress .bar-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--green));border-radius:10px;transition:width .4s}
+.flash-progress .bar-text{font-size:13px;color:var(--text-light)}
+.flash-card-wrap{perspective:1000px;width:100%;max-width:380px;height:440px;margin-bottom:20px;position:relative}
+.flash-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s;cursor:pointer}
+.flash-card.flipped{transform:rotateY(180deg)}
+.flash-card-front,.flash-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center}
+.flash-card-front{background:linear-gradient(145deg,var(--bg-card),#264A6A);border:2px solid rgba(79,195,247,.3)}
+.flash-card-back{background:linear-gradient(145deg,#1E3A50,#2E5A80);border:2px solid rgba(129,199,132,.3);transform:rotateY(180deg)}
+.flash-emoji{font-size:72px;margin-bottom:10px}
+.flash-ph{font-size:17px;color:var(--sky-light);margin-bottom:8px;font-family:"Segoe UI","Lucida Sans Unicode","Arial Unicode MS",sans-serif;letter-spacing:.5px;font-weight:500}
+.flash-word{font-size:34px;font-weight:900;margin-bottom:6px;color:#fff}
+.flash-unit-tag{font-size:12px;padding:3px 10px;border-radius:10px;background:rgba(79,195,247,.2);color:var(--sky)}
+.flash-zh{font-size:28px;font-weight:700;margin-bottom:8px;color:var(--green-light)}
+.flash-tip{font-size:15px;color:rgba(255,255,255,.75);max-width:300px;line-height:1.5;font-style:italic}
+.flash-nav{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
+.flash-nav button{min-width:50px}
+.btn-speaker{width:var(--btn-min);height:var(--btn-min);border-radius:50%;background:var(--sky);border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.btn-speaker:active{transform:scale(.9)}
+.btn-star{width:var(--btn-min);height:var(--btn-min);border-radius:50%;background:transparent;border:2px solid var(--yellow);font-size:22px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.btn-star.starred{background:var(--yellow)}
+.match-screen{background:linear-gradient(180deg,#0B1622,#1E3A50)}
+.match-header{width:100%;max-width:700px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.match-stats{display:flex;gap:16px;font-size:14px;color:var(--text-light)}
+.match-stats span{font-weight:700;color:#fff}
+.match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:600px;width:100%}
+.match-card{aspect-ratio:1;border-radius:var(--radius-sm);cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;text-align:center;padding:6px;word-break:break-word;position:relative;min-width:60px;background:var(--bg-card);border:3px solid transparent;color:var(--text-white)}
+.match-card.en-card{background:linear-gradient(145deg,#1E4D6E,#2878A0);border:3px solid rgba(79,195,247,.25)}
+.match-card.zh-card{background:linear-gradient(145deg,#2E5A3E,#3D7A52);border:3px solid rgba(129,199,132,.25)}
+.match-card:hover{border-color:var(--sky)}
+.match-card.matched{background:var(--green-dark);border-color:var(--green);opacity:.85;pointer-events:none;animation:bounceIn .4s}
+.match-card.selected{border-color:var(--orange);box-shadow:0 0 14px rgba(255,183,77,.6)}
+.match-card.wrong{animation:shake .4s;border-color:var(--red-soft)}
+.match-card.hint-glow{border-color:var(--yellow);box-shadow:0 0 10px rgba(255,241,118,.6)}
+.match-mode-select{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;justify-content:center}
+.match-mode-select button{padding:8px 18px;border-radius:20px;border:2px solid rgba(255,255,255,.25);background:transparent;color:#fff;cursor:pointer;font-size:14px;font-family:var(--font);transition:all .2s}
+.match-mode-select button.active{background:var(--sky);border-color:var(--sky);font-weight:700}
+.defense-screen{background:linear-gradient(180deg,#0B1622,#14283A)}
+.defense-hud{width:100%;max-width:600px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.defense-shields{display:flex;gap:4px;font-size:24px}
+.defense-shields .broken{opacity:.25;animation:shieldBreak .5s}
+.defense-combo{font-size:16px;font-weight:700;color:var(--orange);transition:all .3s}
+.defense-timer{font-size:20px;font-weight:900;color:var(--yellow)}
+.defense-timer.urgent{color:var(--red-soft);animation:pulse .5s infinite}
+.defense-question-area{width:100%;max-width:500px;text-align:center;margin-bottom:16px}
+.defense-word-lg{font-size:42px;font-weight:900;margin-bottom:6px}
+.defense-zh-hint{font-size:20px;color:var(--text-light);margin-bottom:6px}
+.defense-emoji-hint{font-size:48px;margin-bottom:8px}
+.defense-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:500px;width:100%;margin-bottom:16px}
+.defense-option{padding:16px;border-radius:var(--radius);background:var(--bg-card);border:3px solid transparent;color:#fff;font-size:17px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;font-family:var(--font);min-height:var(--btn-min)}
+.defense-option:hover{border-color:var(--sky)}
+.defense-option.correct{border-color:var(--green);background:rgba(129,199,132,.3);animation:bounceIn .4s}
+.defense-option.wrong{border-color:var(--red-soft);background:rgba(239,83,80,.2);animation:shake .4s}
+.defense-input-area{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:500px;width:100%}
+.defense-input{flex:1;min-width:200px;padding:14px 18px;border-radius:var(--radius);border:3px solid rgba(255,255,255,.2);background:var(--bg-card);color:#fff;font-size:20px;font-family:var(--font);text-align:center;outline:none;transition:border-color .2s}
+.defense-input:focus{border-color:var(--sky)}
+.defense-mode-select{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;justify-content:center}
+.defense-mode-select button{padding:8px 18px;border-radius:20px;border:2px solid rgba(255,255,255,.25);background:transparent;color:#fff;cursor:pointer;font-size:14px;font-family:var(--font);transition:all .2s}
+.defense-mode-select button.active{background:var(--orange);border-color:var(--orange);font-weight:700}
+.space-battle-scene{position:relative;width:100%;max-width:500px;height:60px;margin-bottom:8px;overflow:hidden;border-radius:var(--radius-sm);background:linear-gradient(180deg,rgba(13,27,42,.8),rgba(30,58,80,.4));display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.space-base{font-size:28px;transition:all .3s}
+.space-enemy{font-size:28px;animation:float 2s ease-in-out infinite;transition:all .4s}
+.result-screen{background:linear-gradient(180deg,#0D1B2A,#1E3A50);justify-content:center;text-align:center}
+.result-screen.active{display:flex}
+.result-stars{font-size:52px;letter-spacing:8px;margin-bottom:8px}
+.result-stars .earned{animation:starPop .5s forwards;display:inline-block}
+.result-stars .earned:nth-child(1){animation-delay:0s}
+.result-stars .earned:nth-child(2){animation-delay:.2s}
+.result-stars .earned:nth-child(3){animation-delay:.4s}
+.result-title{font-size:28px;font-weight:900;margin-bottom:8px}
+.result-stats{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.result-stat{text-align:center;padding:16px 20px;background:var(--bg-card);border-radius:var(--radius);min-width:100px}
+.result-stat .val{font-size:32px;font-weight:900;color:var(--orange)}
+.result-stat .lbl{font-size:13px;color:var(--text-light)}
+.result-badge{font-size:48px;margin-bottom:6px;animation:bounceIn .6s}
+.result-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.wrong-screen{background:linear-gradient(180deg,#0B1622,#1E3A50)}
+.wrong-empty{text-align:center;color:var(--text-light);padding:40px}
+.wrong-empty .emoji{font-size:48px;margin-bottom:10px}
+.wrong-filter{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;justify-content:center}
+.wrong-filter button{padding:6px 14px;border-radius:16px;border:2px solid rgba(255,255,255,.2);background:transparent;color:#fff;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .2s}
+.wrong-filter button.active{background:var(--red-soft);border-color:var(--red-soft)}
+.wrong-list{width:100%;max-width:600px;display:flex;flex-direction:column;gap:8px}
+.wrong-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-card);border-radius:var(--radius-sm);gap:10px;flex-wrap:wrap}
+.wrong-item .wi-word{font-size:18px;font-weight:700;min-width:120px}
+.wrong-item .wi-zh{font-size:14px;color:var(--text-light);min-width:80px}
+.wrong-item .wi-count{font-size:12px;background:rgba(239,83,80,.2);color:var(--red-soft);padding:2px 10px;border-radius:10px;font-weight:700}
+.wrong-item button{min-height:36px;font-size:13px}
+.badge-screen{background:linear-gradient(180deg,#0B1622,#1E3A50)}
+.badge-rank{font-size:20px;font-weight:700;margin-bottom:20px;padding:10px 24px;background:rgba(255,241,118,.15);border-radius:20px;color:var(--yellow)}
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;max-width:700px;width:100%;margin-bottom:20px}
+.badge-item{text-align:center;padding:16px 10px;background:var(--bg-card);border-radius:var(--radius);border:2px solid transparent}
+.badge-item.earned{border-color:var(--yellow)}
+.badge-item.locked{opacity:.4;filter:grayscale(.6)}
+.badge-emoji{font-size:40px;margin-bottom:4px}
+.badge-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.badge-desc{font-size:11px;color:var(--text-light)}
+
+
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2000;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center}
+.overlay.active{display:flex}
+.overlay-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:32px;text-align:center;max-width:360px;animation:bounceIn .4s}
+.overlay-emoji{font-size:48px;margin-bottom:10px}
+.overlay-title{font-size:20px;font-weight:900;margin-bottom:8px}
+.overlay-text{font-size:15px;color:var(--text-light);margin-bottom:20px;line-height:1.6}
+@media(max-width:500px){
+  .welcome-title{font-size:30px}
+  .flash-card-wrap{height:380px}
+  .flash-emoji{font-size:52px}
+  .flash-word{font-size:28px}
+  .match-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .match-card{font-size:12px}
+  .defense-options{grid-template-columns:1fr 1fr}
+  .defense-word-lg{font-size:32px}
+  .result-stars{font-size:42px}
+  .btn-lg{padding:14px 28px;font-size:17px}
+}
+</style>
+</head>
+<body>
+<div class="stars-layer" id="starsLayer"></div>
+<nav class="nav-bar" id="navBar">
+  <span class="nav-title">🚀 星际单词探险家</span>
+  <button class="nav-btn-home" onclick="navigateTo('welcome')">🏠 首页</button>
+  <button class="nav-btn-map" onclick="navigateTo('map')">🗺️ 星图</button>
+  <button class="nav-btn-wrong" onclick="navigateTo('wrong')">📝 错题</button>
+  <button class="nav-btn-badge" onclick="navigateTo('badges')">🏆 勋章</button>
+  <button class="nav-btn-dialogue" onclick="navigateTo('dialogue')">💬 课文</button>
+  <button class="nav-btn-sound" id="btnSoundToggle" onclick="toggleSound()">🔊</button>
+</nav>
+<div class="screen active welcome-screen" id="screen-welcome">
+  <div class="welcome-logo">🚀</div>
+  <div class="welcome-title">星际单词探险家</div>
+  <div class="welcome-sub">新版 PEP 五年级上册 · 校园星际探险</div>
+  <div class="welcome-rank" id="welcomeRank">⭐ 见习领航员</div>
+  <button class="btn btn-primary btn-lg" onclick="navigateTo('map')">🌟 开始星际探险</button>
+  <div style="margin-top:40px;font-size:13px;color:rgba(255,255,255,.45)">学 → 练 → 战 三阶闯关 · 集齐6枚星球徽章</div>
+</div>
+<div class="screen map-screen" id="screen-map">
+  <div class="map-title">🗺️ 星际航线图</div>
+  <div class="map-sub">登陆 6 大主题星球，逐个点亮星际地图！</div>
+  <div class="map-grid" id="mapGrid"></div>
+</div>
+<div class="screen flash-screen" id="screen-flash">
+  <div class="stage-tabs" id="stageTabs">
+    <button class="stage-tab" data-stage="flash" onclick="switchStage('flash')">📖 闪卡学习</button>
+    
+    <button class="stage-tab" data-stage="match" onclick="switchStage('match')">🃏 消消配对</button>
+    <button class="stage-tab" data-stage="defense" onclick="switchStage('defense')">🚀 太空防御</button>
+  </div>
+  <div class="match-mode-select" id="flashModeSelect" style="margin-bottom:10px">
+    <button class="active" data-mode="basic" onclick="setFlashMode('basic')">📖 基础（单词）</button>
+    <button data-mode="advanced" onclick="setFlashMode('advanced')">📖 进阶（单词+词组）</button>
+  </div>
+  <div class="flash-progress" id="flashProgress">
+    <div class="bar-bg"><div class="bar-fill" id="flashBarFill"></div></div>
+    <span class="bar-text" id="flashBarText">0/0</span>
+  </div>
+  <div class="flash-card-wrap">
+    <div class="flash-card" id="flashCard" onclick="flipFlashCard()">
+      <div class="flash-card-front">
+        <div class="flash-emoji" id="flashEmoji">📖</div>
+        <div class="flash-word" id="flashWord">word</div>
+        <div class="flash-ph" id="flashPh"></div>
+        <div class="flash-unit-tag" id="flashUnitTag">Unit 1</div>
+      </div>
+      <div class="flash-card-back">
+        <div class="flash-zh" id="flashZh">中文</div>
+        <div class="flash-tip" id="flashTip">记忆小贴士</div>
+      </div>
+    </div>
+  </div>
+  <div class="flash-nav">
+    <button class="btn btn-outline btn-sm" onclick="prevFlashCard()">◀ 上一个</button>
+    <button class="btn-speaker" onclick="speakFlashWord();event.stopPropagation()" title="播放发音">🔊</button>
+    <button class="btn-star" id="btnFlashStar" onclick="toggleFlashStar();event.stopPropagation()" title="收藏单词">⭐</button>
+    <button class="btn btn-outline btn-sm" onclick="nextFlashCard()">下一个 ▶</button>
+  </div>
+  <button class="btn btn-sky" id="btnFlashDone" onclick="finishFlashStage()" style="margin-top:16px;display:none">✅ 全部学完，解锁下一关！</button>
+</div>
+<div class="screen match-screen" id="screen-match">
+  <div class="stage-tabs">
+    <button class="stage-tab" data-stage="flash" onclick="switchStage('flash')">📖 闪卡学习</button>
+    <button class="stage-tab" data-stage="match" onclick="switchStage('match')">🃏 消消配对</button>
+    <button class="stage-tab" data-stage="defense" onclick="switchStage('defense')">🚀 太空防御</button>
+  </div>
+  <div class="match-mode-select" id="matchModeSelect">
+    <button class="active" data-mode="basic" onclick="setMatchMode('basic')">🃏 基础模式（本单元）</button>
+    <button data-mode="advanced" onclick="setMatchMode('advanced')">🔥 进阶模式（+错题）</button>
+  </div>
+  <div class="match-header">
+    <div class="match-stats">配对：<span id="matchPairs">0</span>/<span id="matchTotal">0</span></div>
+    <div class="match-stats">失误：<span id="matchErrors">0</span></div>
+    <button class="btn btn-sm btn-outline" onclick="useMatchHint()">💡 提示发音</button>
+  </div>
+  <div class="match-grid" id="matchGrid"></div>
+</div>
+<div class="screen defense-screen" id="screen-defense">
+  <div class="stage-tabs" id="stageTabs">
+    <button class="stage-tab" data-stage="flash" onclick="switchStage('flash')">📖 闪卡学习</button>
+    <button class="stage-tab" data-stage="match" onclick="switchStage('match')">🃏 消消配对</button>
+    <button class="stage-tab" data-stage="defense" onclick="switchStage('defense')">🚀 太空防御</button>
+  </div>
+  <div class="defense-mode-select" id="defenseModeSelect">
+    <button class="active" data-mode="listen" onclick="setDefenseMode('listen')">🎧 新手模式（听音选词）</button>
+    <button data-mode="spell" onclick="setDefenseMode('spell')">⌨️ 进阶模式（拼写作答）</button>
+  </div>
+  <div class="defense-hud">
+    <div class="defense-shields" id="defenseShields"></div>
+    <div class="defense-combo" id="defenseCombo"></div>
+    <div class="defense-timer" id="defenseTimer">⏱ 10</div>
+  </div>
+  <div class="space-battle-scene" id="spaceBattleScene">
+    <div class="space-base" id="spaceBase">🛡️🏰</div>
+    <div class="space-enemy" id="spaceEnemy">👾🛸</div>
+  </div>
+  <div class="defense-question-area" id="defenseQuestionArea">
+    <div class="defense-emoji-hint" id="defenseEmojiHint"></div>
+    <div class="defense-zh-hint" id="defenseZhHint"></div>
+    <div class="defense-word-lg" id="defenseWordLg"></div>
+  </div>
+  <div class="defense-options" id="defenseOptions"></div>
+  <div class="defense-input-area" id="defenseInputArea" style="display:none">
+    <input class="defense-input" id="defenseInput" type="text" placeholder="输入英文单词…" autocomplete="off" autocapitalize="off">
+    <button class="btn btn-primary" onclick="submitSpell()">🚀 发射</button>
+  </div>
+</div>
+
+
+<div class="screen result-screen" id="screen-result">
+  <div class="result-stars" id="resultStars"></div>
+  <div class="result-title" id="resultTitle"></div>
+  <div class="result-badge" id="resultBadge"></div>
+  <div class="result-stats" id="resultStats"></div>
+  <div class="result-actions" id="resultActions"></div>
+</div>
+<div class="screen wrong-screen" id="screen-wrong">
+  <div class="wrong-filter" id="wrongFilter">
+    <button class="active" data-unit="all" onclick="filterWrongWords('all')">📋 全部错题</button>
+    <button data-unit="1" onclick="filterWrongWords(1)">Unit 1</button>
+    <button data-unit="2" onclick="filterWrongWords(2)">Unit 2</button>
+    <button data-unit="3" onclick="filterWrongWords(3)">Unit 3</button>
+    <button data-unit="4" onclick="filterWrongWords(4)">Unit 4</button>
+    <button data-unit="5" onclick="filterWrongWords(5)">Unit 5</button>
+    <button data-unit="6" onclick="filterWrongWords(6)">Unit 6</button>
+  </div>
+  <div class="wrong-list" id="wrongList"></div>
+  <div class="wrong-empty" id="wrongEmpty" style="display:none">
+    <div class="emoji">🎉</div>
+    <div>太棒了！目前没有错题，继续保持哦~</div>
+  </div>
+</div>
+<div class="screen badge-screen" id="screen-badges">
+  <div class="badge-rank" id="badgeRank"></div>
+  <div class="badge-grid" id="badgeGrid"></div>
+  <button class="btn btn-red btn-sm" onclick="resetAllData()" style="margin-bottom:12px">🗑️ 重置所有进度</button>
+  <button class="btn btn-green" id="btnCertificate" onclick="showCertificate()" style="display:none">🎓 查看电子荣誉证书</button>
+</div>
+<div class="screen dialogue-screen" id="screen-dialogue">
+  <div class="dialogue-container">
+    <div class="dialogue-unit-title" id="dialogueTitle">Unit 1 What's he like?</div>
+    <div class="dialogue-unit-sub" id="dialogueSub">点击对话气泡，即可点读发声 📢</div>
+    <div class="dialogue-unit-select" id="dialogueUnitSelect"></div>
+    <div class="dialogue-play-bar" id="dialoguePlayBar"></div>
+    <div id="dialogueContent"></div>
+    <div class="dialogue-hint">💡 点击任意气泡单独朗读 · 点击场景按钮连续播放</div>
+  </div>
+</div>
+<div class="overlay" id="overlayRest">
+  <div class="overlay-card">
+    <div class="overlay-emoji">👀</div>
+    <div class="overlay-title">护眼小提示</div>
+    <div class="overlay-text">你已经学习了一会儿啦！<br>站起来看看远方 🌳<br>眨眨眼睛休息一下吧~<br><br>⏱ 每 8 分钟提醒一次</div>
+    <button class="btn btn-primary" onclick="closeRestOverlay()">好的，继续探险！</button>
+  </div>
+</div>
+<div class="overlay" id="overlayCertificate">
+  <div class="overlay-card" style="max-width:420px">
+    <div class="overlay-emoji">🎓</div>
+    <div class="overlay-title">🏆 星际单词探险家</div>
+    <div class="overlay-text" id="certificateText"></div>
+    <button class="btn btn-primary" onclick="closeCertificate()">📸 截图保存吧！</button>
+  </div>
+</div>
+<script>
+const VOCABULARY_DATA = [
+  { en:"team", ph:"/tiːm/", zh:"（游戏或运动的）队；（一起工作的）组，班", phrase:"a good team | our team", emoji:"👥", tip:"team = 团队！T 像队长领队，大家一起 team work！", unit:1 },
+  { en:"player", ph:"/ˈpleɪə(r)/", zh:"运动员；参赛选手", phrase:"a good player | football player", emoji:"⛹️", tip:"play（玩/比赛）+ er = player（运动员）！打球的人~", unit:1 },
+  { en:"him", ph:"/hɪm/", zh:"他（宾格）", phrase:"like him | with him", emoji:"👦", tip:"him 是他（宾格），和 he（主格）是兄弟词！I like him~", unit:1, required:true },
+  { en:"lovely", ph:"/ˈlʌvli/", zh:"美丽的；优美的", phrase:"a lovely day | a lovely girl", emoji:"🌸", tip:"love（爱）+ ly = lovely（可爱的、美丽的），让你忍不住喜欢！", unit:1, required:true },
+  { en:"clever", ph:"/ˈklevə(r)/", zh:"聪明的；聪颖的", phrase:"a clever boy | very clever", emoji:"🧠", tip:"clever = 聪明！读音像'可乐我'→ 喝可乐变聪明~", unit:1, required:true },
+  { en:"young", ph:"/jʌŋ/", zh:"幼小的；年轻的", phrase:"a young teacher | too young", emoji:"👶", tip:"young = 年轻，和 old（老）相反！一起记：young ↔ old", unit:1, required:true },
+  { en:"hard-working", ph:"/hɑːd ˈwɜːkɪŋ/", zh:"工作努力的；辛勤的", phrase:"a hard-working student | very hard-working", emoji:"💪", tip:"hard（努力）+ working（工作）= 努力工作的！拆开超好记！", unit:1 },
+  { en:"science", ph:"/ˈsaɪəns/", zh:"科学；自然科学", phrase:"science class | a science teacher", emoji:"🔬", tip:"science = 科学！读音像'赛恩斯'→ 科学比赛~", unit:1, required:true },
+  { en:"robot", ph:"/ˈrəʊbɒt/", zh:"机器人", phrase:"a toy robot | make a robot", emoji:"🤖", tip:"robot = 机器人！发音就是'机器人'的英文版！", unit:1, required:true },
+  { en:"jump", ph:"/dʒʌmp/", zh:"跳；跃", phrase:"jump high | jump rope", emoji:"🦘", tip:"jump = 跳！想象袋鼠 jump jump jump！", unit:1, required:true },
+  { en:"rope", ph:"/rəʊp/", zh:"绳；粗绳", phrase:"jump rope | a long rope", emoji:"🪢", tip:"rope = 绳子，和 hope（希望）差一个字母！跳绳→ jump rope！", unit:1, required:true },
+  { en:"piano", ph:"/piˈænəʊ/", zh:"钢琴", phrase:"play the piano", emoji:"🎹", tip:"piano = 钢琴，三个音节 pi-a-no，弹钢琴→ play the piano！", unit:1 },
+  { en:"chess", ph:"/tʃes/", zh:"国际象棋", phrase:"play chess", emoji:"♟️", tip:"chess = 国际象棋，和 dress（裙子）押韵！下棋→ play chess~", unit:1 },
+  { en:"front", ph:"/frʌnt/", zh:"前部", phrase:"in front of", emoji:"⬆️", tip:"front = 前面，和 back（后面）相反！in front of = 在…前面~", unit:1, required:true },
+  { en:"easy", ph:"/ˈiːzi/", zh:"容易的；轻易的", phrase:"very easy | an easy question", emoji:"👍", tip:"easy = 简单！读音像'一贼'→ 简单得像只有一个贼~", unit:1, required:true },
+  { en:"star", ph:"/stɑː(r)/", zh:"歌唱（或表演）明星", phrase:"a film star | a pop star", emoji:"⭐", tip:"star = 星星 / 明星！天上的星星和舞台上的明星都是 star~", unit:1, required:true },
+  { en:"wonderful", ph:"/ˈwʌndəfl/", zh:"精彩的；绝妙的", phrase:"a wonderful day | wonderful!", emoji:"🎉", tip:"wonder（奇迹）+ ful = wonderful！太精彩了像奇迹一样！", unit:1, required:true },
+  { en:"Australia", ph:"/ɒˈstreɪliə/", zh:"澳大利亚", phrase:"in Australia | from Australia", emoji:"🦘", tip:"Australia = 澳大利亚，袋鼠的家乡！首字母 A 大写~", unit:1 },
+  { en:"sad", ph:"/sæd/", zh:"悲哀的；难过的", phrase:"feel sad | look sad", emoji:"😢", tip:"sad 只有三个字母，像下雨天的心情~和 happy 相反！", unit:2, required:true },
+  { en:"matter", ph:"/ˈmætə(r)/", zh:"事情；问题", phrase:"What's the matter?", emoji:"❓", tip:"matter = 事情，What's the matter? = 怎么了？关心别人的常用句~", unit:2 },
+  { en:"project", ph:"/ˈprɒdʒekt/", zh:"项目；方案", phrase:"a school project | do a project", emoji:"📋", tip:"project = 项目/课题，学校常做的 project 作业~", unit:2 },
+  { en:"centre", ph:"/ˈsentə(r)/", zh:"中心", phrase:"in the centre | shopping centre", emoji:"🎯", tip:"centre = 中心！英式拼法，美式拼 center~", unit:2 },
+  { en:"agree", ph:"/əˈɡriː/", zh:"同意；赞成", phrase:"I agree | agree with", emoji:"🤝", tip:"agree = 同意，disagree = 不同意！a-gree 两个音节~", unit:2 },
+  { en:"finish", ph:"/ˈfɪnɪʃ/", zh:"完成；做好", phrase:"finish homework | finish school", emoji:"✅", tip:"finish = 完成！做完了就喊'I finish!'~", unit:2 },
+  { en:"Monday", ph:"/ˈmʌndeɪ/", zh:"星期一", phrase:"on Monday | Monday morning", emoji:"📅", tip:"Monday = 周一，Mon = 月亮 day~ 一周的开始！", unit:2 },
+  { en:"worried", ph:"/ˈwʌrid/", zh:"担心的；担忧的", phrase:"feel worried | be worried about", emoji:"😟", tip:"worried 来自 worry（担心），把 y 变 i 加 ed~", unit:2 },
+  { en:"both", ph:"/bəʊθ/", zh:"两者", phrase:"both of us | both A and B", emoji:"✌️", tip:"both = 两者都！both A and B = A 和 B 都~", unit:2 },
+  { en:"excited", ph:"/ɪkˈsaɪtɪd/", zh:"激动的；兴奋的", phrase:"feel excited | be excited about", emoji:"🤩", tip:"excite（兴奋）+ d = excited！像过生日拆礼物一样兴奋！", unit:2, required:true },
+  { en:"wrong", ph:"/rɒŋ/", zh:"错误的", phrase:"something wrong | wrong answer", emoji:"❌", tip:"wrong = 错，和 right（对）相反！一起记：right ↔ wrong", unit:2, required:true },
+  { en:"angry", ph:"/ˈæŋɡri/", zh:"愤怒的；生气的", phrase:"feel angry | get angry", emoji:"😠", tip:"angry 音似'暗鬼'→ 生气得像暗黑小鬼！别惹 Ta~", unit:2, required:true },
+  { en:"afraid", ph:"/əˈfreɪd/", zh:"担心；害怕", phrase:"be afraid of", emoji:"😨", tip:"afraid = 害怕，be afraid of = 害怕… 胆子小的时候就 afraid~", unit:2 },
+  { en:"parent", ph:"/ˈpeərənt/", zh:"父亲；母亲", phrase:"my parents", emoji:"👨‍👩‍👧", tip:"parent = 父母，爸爸妈妈都是 parent！复数→ parents~", unit:2, required:true },
+  { en:"ask", ph:"/ɑːsk/", zh:"问；询问", phrase:"ask a question | ask for help", emoji:"🙋", tip:"ask = 问！只有三个字母，不懂就 ask！", unit:2, required:true },
+  { en:"move", ph:"/muːv/", zh:"搬家；移动", phrase:"move to | move house", emoji:"📦", tip:"move = 移动/搬家，看电影 move 起来！", unit:2, required:true },
+  { en:"yours", ph:"/jɔːz/", zh:"您的（用于书信结尾签名前）", phrase:"Yours, (in letters)", emoji:"💌", tip:"yours = 你的（名词性物主代词），书信结尾写 Yours~", unit:2 },
+{ en:"Wednesday", ph:"/ˈwenzdeɪ/", zh:"星期三", phrase:"on Wednesday", emoji:"📅", tip:"Wednesday = 周三！拼写难：We-d-nes-day 分四段记！", unit:3 },
+  { en:"subject", ph:"/ˈsʌbdʒɪkt/", zh:"科目；学科", phrase:"favourite subject | school subject", emoji:"📚", tip:"subject = 学科！sub + ject，学校里学的科目~", unit:3, required:true },
+  { en:"Tuesday", ph:"/ˈtjuːzdeɪ/", zh:"星期二", phrase:"on Tuesday", emoji:"📅", tip:"Tuesday = 周二！Tues-day，Two 的发音有点像 Tues~", unit:3 },
+  { en:"Friday", ph:"/ˈfraɪdeɪ/", zh:"星期五", phrase:"on Friday | Friday evening", emoji:"🎉", tip:"Friday = 周五！Fri-day，周五最开心！TGIF！", unit:3 },
+  { en:"because", ph:"/bɪˈkɒz/", zh:"因为", phrase:"because of", emoji:"🤔", tip:"because = 因为，be-cause 两个音节，回答 why 用 because！", unit:3, required:true },
+  { en:"Thursday", ph:"/ˈθɜːzdeɪ/", zh:"星期四", phrase:"on Thursday", emoji:"📅", tip:"Thursday = 周四！Thurs-day，最难拼的星期词~", unit:3 },
+  { en:"start", ph:"/stɑːt/", zh:"开始", phrase:"start to | start school", emoji:"▶️", tip:"start = 开始，和 finish 相反！Let's start! 我们开始吧！", unit:3 },
+  { en:"usually", ph:"/ˈjuːʒuəli/", zh:"通常地；经常地", phrase:"usually do | usually go", emoji:"🔄", tip:"usually = 通常，usual（平常）+ ly，和平常一样~", unit:3 },
+  { en:"weekend", ph:"/ˌwiːkˈend/", zh:"周末", phrase:"on the weekend | this weekend", emoji:"🎊", tip:"weekend = 周末！week（周）+ end（末尾）= 一周的末尾~", unit:3 },
+  { en:"sometimes", ph:"/ˈsʌmtaɪmz/", zh:"有时；间或", phrase:"sometimes I...", emoji:"🕐", tip:"some（一些）+ times（时候）= 有时候！拆开超好记！", unit:3, required:true },
+  { en:"Saturday", ph:"/ˈsætədeɪ/", zh:"星期六", phrase:"on Saturday", emoji:"🎮", tip:"Saturday = 周六！Satur-day，周末第一天！", unit:3 },
+  { en:"Sunday", ph:"/ˈsʌndeɪ/", zh:"星期日", phrase:"on Sunday", emoji:"☀️", tip:"Sunday = 周日！Sun-day，太阳日，一周的最后一天~", unit:3 },
+  { en:"lesson", ph:"/ˈlesn/", zh:"课；一节课", phrase:"English lesson | have a lesson", emoji:"🏫", tip:"lesson = 课，和 class 是近义词！上英语课→ English lesson~", unit:3, required:true },
+  { en:"evening", ph:"/ˈiːvnɪŋ/", zh:"晚上；傍晚", phrase:"in the evening | this evening", emoji:"🌆", tip:"evening = 晚上/傍晚，太阳下山了就是 evening！", unit:3, required:true },
+  { en:"answer", ph:"/ˈɑːnsə(r)/", zh:"答复；回答", phrase:"answer the question", emoji:"💬", tip:"answer = 回答，question（问题）的搭档！问和答：question & answer", unit:3, required:true },
+  { en:"ping-pong", ph:"/ˈpɪŋ pɒŋ/", zh:"乒乓球", phrase:"play ping-pong", emoji:"🏓", tip:"ping-pong = 乒乓球！就是中文'乒乓'的音译！", unit:3, required:true },
+  { en:"night", ph:"/naɪt/", zh:"夜；夜晚", phrase:"at night | good night", emoji:"🌙", tip:"night = 夜晚，和 day（白天）相反！Good night！晚安~", unit:3, required:true },
+  { en:"visit", ph:"/ˈvɪzɪt/", zh:"看望；拜访；参观", phrase:"visit grandparents", emoji:"🏠", tip:"visit = 拜访/参观，visit grandparents = 看望爷爷奶奶~", unit:3, required:true },
+  { en:"grandparent", ph:"/ˈɡrænpeərənt/", zh:"祖父；祖母；外祖父；外祖母", phrase:"my grandparents", emoji:"👴👵", tip:"grand（伟大的）+ parent（父母）= grandparent 祖父母！", unit:3 },
+  { en:"stay", ph:"/steɪ/", zh:"待；保持；继续是", phrase:"stay healthy | stay at home", emoji:"🏠", tip:"stay = 待着/保持，stay healthy = 保持健康！", unit:4 },
+  { en:"should", ph:"/ʃʊd/", zh:"（提建议）该，可以", phrase:"You should... | should not", emoji:"💡", tip:"should = 应该！You should... = 你应该… 给建议的万能词！", unit:4, required:true },
+  { en:"flu", ph:"/fluː/", zh:"流行性感冒；流感", phrase:"have the flu | get the flu", emoji:"🤒", tip:"flu = 流感！只有三个字母，感冒了要 have a rest~", unit:4 },
+  { en:"else", ph:"/els/", zh:"其他的；别的", phrase:"What else? | someone else", emoji:"🔀", tip:"else = 其他的！What else? = 还有什么？常用小词~", unit:4 },
+  { en:"exercise", ph:"/ˈeksəsaɪz/", zh:"锻炼；训练；操练", phrase:"do exercise | take exercise", emoji:"🏃", tip:"exercise = 锻炼！音似'艾克斯赛斯'→ 像赛车一样动起来！", unit:4, required:true },
+  { en:"enough", ph:"/ɪˈnʌf/", zh:"足够的；充足的；充分的", phrase:"enough sleep | good enough", emoji:"✅", tip:"enough = 足够，e-nough，够用就好！sleep enough = 睡够~", unit:4 },
+  { en:"if", ph:"/ɪf/", zh:"如果；假若；倘若", phrase:"if you...", emoji:"🤔", tip:"if = 如果！只有两个字母，假设句型必备！", unit:4 },
+  { en:"habit", ph:"/ˈhæbɪt/", zh:"习惯", phrase:"good habit | bad habit", emoji:"🔄", tip:"habit = 习惯，good habit 好习惯 / bad habit 坏习惯！", unit:4 },
+  { en:"show", ph:"/ʃəʊ/", zh:"（电视或广播）节目", phrase:"TV show | talk show", emoji:"📺", tip:"show = 节目/表演，TV show = 电视节目！", unit:4, required:true },
+  { en:"phone", ph:"/fəʊn/", zh:"电话；电话机", phrase:"mobile phone | on the phone", emoji:"📱", tip:"phone = 电话！mobile phone = 手机~", unit:4, required:true },
+  { en:"then", ph:"/ðen/", zh:"那么；因此；既然如此", phrase:"and then | since then", emoji:"👉", tip:"then = 那么/然后，只有四个字母！First... then... 先说再做~", unit:4, required:true },
+  { en:"rest", ph:"/rest/", zh:"休息；放松", phrase:"have a rest | take a rest", emoji:"😴", tip:"rest = 休息，have a rest = 休息一下！", unit:4 },
+  { en:"take care of", zh:"爱护；照顾", phrase:"take care of yourself", emoji:"🤲", tip:"take care of = 照顾！Take care of yourself = 照顾好自己~", unit:4 },
+  { en:"check", ph:"/tʃek/", zh:"查看；查明", phrase:"check your work", emoji:"🔍", tip:"check = 检查！check your work = 检查你的作业~", unit:4 },
+  { en:"less", ph:"/les/", zh:"较少的，更少的（修饰不可数名词）", phrase:"less sugar | less time", emoji:"📉", tip:"less = 更少，和 more（更多）相反！", unit:4 },
+  { en:"brush", ph:"/brʌʃ/", zh:"（用刷子）刷净，刷亮", phrase:"brush your teeth", emoji:"🪥", tip:"brush = 刷！brush your teeth = 刷牙！", unit:4 },
+  { en:"tooth", ph:"/tuːθ/", zh:"牙；齿（复数 teeth）", phrase:"brush your teeth | toothbrush", emoji:"🦷", tip:"tooth = 牙齿，复数 teeth！brush your teeth 每天两次~", unit:4 },
+  { en:"twice", ph:"/twaɪs/", zh:"两次；两遍", phrase:"twice a day", emoji:"✌️", tip:"twice = 两次！two → twice，和 once（一次）一起记！", unit:4 },
+  { en:"hour", ph:"/ˈaʊə(r)/", zh:"小时", phrase:"an hour | one hour", emoji:"⏰", tip:"hour = 小时，h 不发音！an hour = 一个小时~", unit:4, required:true },
+  { en:"free", ph:"/friː/", zh:"空闲的；无安排的", phrase:"free time | I am free", emoji:"🕊️", tip:"free = 空闲/自由！I'm free = 我有空~", unit:4, required:true },
+{ en:"hungry", ph:"/ˈhʌŋɡri/", zh:"感到饿的", phrase:"I am hungry | feel hungry", emoji:"😋", tip:"hungry = 饿！饿得像'夯个梨'来吃！I'm hungry~", unit:5, required:true },
+  { en:"beef", ph:"/biːf/", zh:"牛肉", phrase:"beef noodles | some beef", emoji:"🥩", tip:"beef = 牛肉！bee（蜜蜂）+ f → 蜜蜂飞到牛肉上？记住画面！", unit:5 },
+  { en:"ice cream", ph:"/ˌaɪs ˈkriːm/", zh:"（一份）冰激凌", phrase:"an ice cream | eat ice cream", emoji:"🍦", tip:"ice（冰）+ cream（奶油）= 冰激凌！夏天最好吃的~", unit:5, required:true },
+  { en:"little", ph:"/ˈlɪtl/", zh:"少许；一点", phrase:"a little | a little milk", emoji:"🤏", tip:"little = 一点/少许，a little = 一点点，修饰不可数名词~", unit:5, required:true },
+  { en:"dumpling", ph:"/ˈdʌmplɪŋ/", zh:"饺子；汤圆", phrase:"eat dumplings | make dumplings", emoji:"🥟", tip:"dumpling = 饺子！中国的传统美食，过年必吃~", unit:5 },
+  { en:"tea", ph:"/tiː/", zh:"茶叶；茶；茶水", phrase:"a cup of tea | drink tea", emoji:"🍵", tip:"tea = 茶！只有三个字母，中国人最爱喝的~", unit:5, required:true },
+  { en:"hamburger", ph:"/ˈhæmbɜːɡə(r)/", zh:"汉堡包；汉堡牛肉饼", phrase:"a hamburger | eat a hamburger", emoji:"🍔", tip:"hamburger = 汉堡！ham + bur + ger 分三段记~", unit:5 },
+  { en:"Mrs", ph:"/ˈmɪsɪz/", zh:"（姓氏前）太太，夫人", phrase:"Mrs Green | Mrs Wang", emoji:"👩", tip:"Mrs = 夫人/太太，Miss（小姐）+ Mrs 一起记！", unit:5, required:true },
+  { en:"coconut", ph:"/ˈkəʊkənʌt/", zh:"椰子", phrase:"coconut milk | a coconut", emoji:"🥥", tip:"coconut = 椰子！co-co-nut 三个音节，海岛必备水果~", unit:5 },
+  { en:"interesting", ph:"/ˈɪntrəstɪŋ/", zh:"有趣的；有吸引力的", phrase:"an interesting book | very interesting", emoji:"🤓", tip:"interest（兴趣）+ ing = interesting！有兴趣的→ 有趣的~", unit:5, required:true },
+  { en:"seed", ph:"/siːd/", zh:"种子；籽", phrase:"plant a seed | sunflower seed", emoji:"🌱", tip:"seed = 种子！种下去会长出植物的小种子~", unit:5 },
+  { en:"pull", ph:"/pʊl/", zh:"拔出；抽出", phrase:"pull up | pull out", emoji:"🔄", tip:"pull = 拉/拔！和 push（推）相反！pull up = 拔出来~", unit:5 },
+  { en:"pull up", zh:"拔出", phrase:"pull up carrots", emoji:"🌿", tip:"pull（拉）+ up（向上）= 拔出来！pull up the carrot~", unit:5 },
+  { en:"stem", ph:"/stem/", zh:"（花草的）茎；梗", phrase:"long stem | plant stem", emoji:"🌿", tip:"stem = 茎/梗，植物的'身体'部分~", unit:5 },
+  { en:"root", ph:"/ruːt/", zh:"根；根茎", phrase:"tree root | plant root", emoji:"🪴", tip:"root = 根！植物在地下看不见的部分就是 root~", unit:5 },
+  { en:"lotus", ph:"/ˈləʊtəs/", zh:"莲属植物", phrase:"lotus flower | lotus root", emoji:"🪷", tip:"lotus = 莲花！出淤泥而不染的美丽莲花~", unit:5 },
+  { en:"lake", ph:"/leɪk/", zh:"湖；湖泊", phrase:"by the lake | in the lake", emoji:"🏞️", tip:"lake = 湖，和 cake（蛋糕）押韵！去湖边吃蛋糕~", unit:5, required:true },
+  { en:"world", ph:"/wɜːld/", zh:"世界；地球", phrase:"the world | around the world", emoji:"🌍", tip:"world = 世界！world map = 世界地图！", unit:5, required:true },
+  { en:"round", ph:"/raʊnd/", zh:"圆形的；环形的；球形的", phrase:"round table | round face", emoji:"⚪", tip:"round = 圆的！round table = 圆桌~", unit:5 },
+  { en:"different", ph:"/ˈdɪfrənt/", zh:"不同的；有区别的", phrase:"different from | look different", emoji:"🌈", tip:"different = 不同的！和 same（相同）相反！", unit:5 },
+  { en:"way", ph:"/weɪ/", zh:"方法；手段；途径", phrase:"this way | the best way", emoji:"🛤️", tip:"way = 方法/路！This way = 这边走！只有三个字母~", unit:5, required:true },
+  { en:"river", ph:"/ˈrɪvə(r)/", zh:"河；江", phrase:"in the river | by the river", emoji:"🏞️", tip:"river = 河流，音似'瑞文'→ 河流像瑞丽的文章一样流畅~", unit:6, required:true },
+  { en:"nature", ph:"/ˈneɪtʃə(r)/", zh:"自然界；大自然", phrase:"in nature | nature park", emoji:"🌍", tip:"nature = 自然，na-ture 两个音节，大自然就是 nature！", unit:6 },
+  { en:"waterfall", ph:"/ˈwɔːtəfɔːl/", zh:"瀑布", phrase:"a beautiful waterfall", emoji:"🌊", tip:"water（水）+ fall（落下）= 瀑布！水落下来→ 瀑布！", unit:6 },
+  { en:"forest", ph:"/ˈfɒrɪst/", zh:"森林；林区", phrase:"in the forest | go to the forest", emoji:"🌳", tip:"forest = 森林，fore（前面）+ st → 前面一大片就是森林！", unit:6, required:true },
+  { en:"famous", ph:"/ˈfeɪməs/", zh:"著名的；出名的", phrase:"a famous place | be famous for", emoji:"🌟", tip:"famous = 出名！fame（名气）的形容词，大家都认识你~", unit:6, required:true },
+  { en:"mountain", ph:"/ˈmaʊntən/", zh:"山岳；高山", phrase:"climb a mountain | high mountain", emoji:"⛰️", tip:"mountain = 山，mount（攀登）+ ain → 要攀登的高山！", unit:6 },
+  { en:"trip", ph:"/trɪp/", zh:"短途旅行；出行", phrase:"take a trip | a school trip", emoji:"🧳", tip:"trip = 旅行/出行，take a trip = 出游！", unit:6 },
+  { en:"dangerous", ph:"/ˈdeɪndʒərəs/", zh:"有危险的；不安全的", phrase:"very dangerous | be dangerous", emoji:"⚠️", tip:"danger（危险）+ ous = dangerous！危险的！注意安全！", unit:6 },
+  { en:"heavy", ph:"/ˈhevi/", zh:"程度大的；严重的", phrase:"heavy rain | a heavy bag", emoji:"🏋️", tip:"heavy = 重的/程度大的！heavy rain = 大雨~", unit:6, required:true },
+  { en:"hotel", ph:"/həʊˈtel/", zh:"旅馆；旅社", phrase:"in a hotel | stay at a hotel", emoji:"🏨", tip:"hotel = 旅馆，旅行 stay in a hotel~", unit:6 },
+  { en:"close", ph:"/kləʊz/", zh:"关；关闭；闭上", phrase:"close the door | close the window", emoji:"🚪", tip:"close = 关，和 open（开）相反！close the door = 关门~", unit:6, required:true },
+  { en:"umbrella", ph:"/ʌmˈbrelə/", zh:"伞；雨伞", phrase:"take an umbrella | an umbrella", emoji:"☂️", tip:"umbrella = 雨伞！um-brel-la 三个音节，下雨天必备~", unit:6, required:true },
+  { en:"raincoat", ph:"/ˈreɪnkəʊt/", zh:"雨衣", phrase:"wear a raincoat | a yellow raincoat", emoji:"🧥", tip:"rain（雨）+ coat（外套）= 雨衣！下雨天穿的外套~", unit:6 },
+  { en:"worry", ph:"/ˈwʌri/", zh:"担心；担忧；发愁", phrase:"don't worry | worry about", emoji:"😟", tip:"worry = 担心，Don't worry! = 别担心！", unit:6, required:true },
+  { en:"fine", ph:"/faɪn/", zh:"晴朗的", phrase:"a fine day | I am fine", emoji:"☀️", tip:"fine = 晴朗/好！It's fine today = 今天天气好~", unit:6, required:true },
+  { en:"fog", ph:"/fɒɡ/", zh:"雾", phrase:"heavy fog | foggy day", emoji:"🌫️", tip:"fog = 雾！只有三个字母，foggy day = 雾天~", unit:6 },
+  { en:"flood", ph:"/flʌd/", zh:"洪水；水灾", phrase:"a big flood", emoji:"🌊", tip:"flood = 洪水，水太多了就 flood！和大自然有关~", unit:6, required:true },
+  { en:"fire", ph:"/ˈfaɪə(r)/", zh:"火；火灾", phrase:"start a fire | on fire", emoji:"🔥", tip:"fire = 火！firefighter = 消防员，灭火的人~", unit:6, required:true },
+  { en:"know", ph:"/nəʊ/", zh:"知道；了解", phrase:"I know | Do you know?", emoji:"🧠", tip:"know = 知道，k 不发音！I know = 我知道！", unit:6, required:true },
+  { en:"before", ph:"/bɪˈfɔː(r)/", zh:"在……之前", phrase:"before school | the day before", emoji:"⏪", tip:"before = 在…之前，和 after（之后）相反！", unit:6, required:true },
+  { en:"go hiking", zh:"徒步旅行", phrase:"go hiking in the mountain", emoji:"🥾", tip:"go hiking = 徒步/远足！go + 动词 ing 表示去做某事~", unit:6 },
+  { en:"bring", ph:"/brɪŋ/", zh:"带来；取来", phrase:"bring me | bring to school", emoji:"🎒", tip:"bring = 带来，和 take（带走）相反！bring me = 带给我~", unit:6, required:true }
+];
+// ============================================================
+//  音效引擎 (Web Audio API)
+// ============================================================
+let audioCtx = null;
+let soundOn = true;
+
+function initAudio(){ if(!audioCtx){ audioCtx = new(window.AudioContext||window.webkitAudioContext)(); } }
+function playTone(freq,type,dur,vol){
+  if(!audioCtx||!soundOn)return;
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol||.15,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);
+}
+function sfxFlip(){ playTone(600,'sine',.1,.08);setTimeout(function(){playTone(800,'sine',.1,.08)},80) }
+function sfxCorrect(){ playTone(523,'sine',.1,.1);setTimeout(function(){playTone(659,'sine',.1,.1)},100);setTimeout(function(){playTone(784,'sine',.15,.15)},200) }
+function sfxWrong(){ playTone(200,'sawtooth',.2,.08);setTimeout(function(){playTone(150,'sawtooth',.2,.08)},100) }
+function sfxMatch(){ playTone(440,'sine',.08,.1);setTimeout(function(){playTone(660,'sine',.08,.1)},80);setTimeout(function(){playTone(880,'sine',.12,.15)},160) }
+function sfxBadge(){ playTone(523,'triangle',.1,.1);setTimeout(function(){playTone(659,'triangle',.1,.1)},120);setTimeout(function(){playTone(784,'triangle',.1,.1)},240);setTimeout(function(){playTone(1047,'triangle',.2,.2)},360) }
+function sfxLaser(){ playTone(1000,'square',.05,.04);setTimeout(function(){playTone(800,'square',.05,.04)},40);setTimeout(function(){playTone(600,'square',.05,.04)},80) }
+function sfxShieldBreak(){ playTone(100,'sawtooth',.3,.1) }
+function sfxClick(){ playTone(440,'sine',.05,.04) }
+
+function toggleSound(){
+  soundOn=!soundOn;
+  document.getElementById('btnSoundToggle').textContent=soundOn?'🔊':'🔇';
+}
+
+// ============================================================
+//  本地存储
+// ============================================================
+const STORAGE_KEY = 'starword_explorer_v2';
+function loadState(){
+  try{ var d=localStorage.getItem(STORAGE_KEY); return d?JSON.parse(d):defaultState() }
+  catch(e){ return defaultState() }
+}
+function defaultState(){
+  return {units:{},wrongWords:{},starredWords:[],rank:0,lastUnit:null,sessionStart:Date.now()};
+}
+function saveState(s){ localStorage.setItem(STORAGE_KEY,JSON.stringify(s)) }
+function getUnitProgress(s,u){
+  if(!s.units[u]) s.units[u]={flashDone:false,matchStars:0,defenseDone:false,badge:false,skin:false};
+  return s.units[u];
+}
+function addWrongWord(s,en,zh,unit){ if(!s.wrongWords[en]) s.wrongWords[en]={zh:zh,unit:unit,count:0}; s.wrongWords[en].count++; }
+function toggleStarWord(s,en,unit){
+  var idx=-1;
+  for(var i=0;i<s.starredWords.length;i++){ if(s.starredWords[i].en===en){ idx=i;break; } }
+  if(idx>=0) s.starredWords.splice(idx,1); else s.starredWords.push({en:en,unit:unit});
+}
+function isStarred(s,en){ for(var i=0;i<s.starredWords.length;i++){ if(s.starredWords[i].en===en)return true; } return false; }
+function getRankName(rank){ var names=['见习领航员','一星领航员','二星领航员','三星领航员']; return names[rank]||'见习领航员' }
+function calcRank(s){
+  var badges=0;
+  for(var u=1;u<=6;u++){ if(s.units[u]&&s.units[u].badge) badges++; }
+  if(badges>=6) return 3; if(badges>=4) return 2; if(badges>=2) return 1; return 0;
+}
+
+var G = loadState();
+
+// ============================================================
+//  阶段切换
+// ============================================================
+function switchStage(stage){
+  navigateTo(stage);
+  if(stage==='flash') initFlashStage(currentUnit);
+  if(stage==='match') initMatchStage(currentUnit);
+  if(stage==='defense') initDefenseStage(currentUnit);
+}
+
+function updateStageTabs(){
+  var p=getUnitProgress(G,currentUnit);
+  var tabs=document.querySelectorAll('.stage-tab');
+  for(var i=0;i<tabs.length;i++){
+    var tab=tabs[i];
+    tab.classList.remove('active','locked');
+    var stage=tab.dataset.stage;
+    // find which screen is active
+    var screenActive='';
+    if(document.getElementById('screen-flash').classList.contains('active')) screenActive='flash';
+    else if(document.getElementById('screen-match').classList.contains('active')) screenActive='match';
+    else if(document.getElementById('screen-defense').classList.contains('active')) screenActive='defense';
+    if(stage===screenActive) tab.classList.add('active');
+    // all stages freely accessible
+    // show star rating on match tab
+    if(stage==='match'&&p.matchStars>0){
+      var stars='';
+      for(var s=1;s<=3;s++) stars+=s<=p.matchStars?'⭐':'☆';
+      if(tab.textContent.indexOf('⭐')===-1) tab.innerHTML=tab.innerHTML+' <span class="tab-star">'+stars+'</span>';
+    }
+  }
+}
+
+// ============================================================
+//  页面导航
+// ============================================================
+function navigateTo(screen){
+  // stop all running game timers and speech
+  if(defTimer){ clearInterval(defTimer); defTimer=null; }
+  if(window.speechSynthesis){ window.speechSynthesis.cancel(); }
+  if(matchLocked){ matchLocked=false; matchSel=[]; }
+  var screens=document.querySelectorAll('.screen');
+  for(var i=0;i<screens.length;i++) screens[i].classList.remove('active');
+  var el=document.getElementById('screen-'+screen);
+  if(el) el.classList.add('active');
+  initAudio();
+  sfxClick();
+  if(screen==='map') renderStarMap();
+  if(screen==='wrong') renderWrongWords('all');
+  if(screen==='badges') renderBadges();
+  if(screen==='welcome'){ document.getElementById('welcomeRank').textContent='⭐ '+getRankName(calcRank(G)); }
+  window.scrollTo(0,0);
+}
+
+// ============================================================
+//  宇宙通用
+// ============================================================
+var currentUnit = 1;
+
+function getUnitWords(unit){
+  var seen={}, result=[];
+  for(var i=0;i<VOCABULARY_DATA.length;i++){
+    var w=VOCABULARY_DATA[i];
+    if(w.unit!==unit) continue;
+    var key=w.en.toLowerCase();
+    if(seen[key]) continue;
+    seen[key]=true; result.push(w);
+  }
+  return result;
+}
+
+function getUnitName(u){
+  var names=['','Different Friends 不一样的朋友','My Feelings 我的情绪','Work and Play 学习与玩乐','Healthy Habits 健康习惯','Food We Eat 我们吃的食物','Nature and Us 自然与我们'];
+  return names[u]||'Unit '+u;
+}
+
+function speakWord(en){
+  initAudio();
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(en);
+  u.lang='en-US';u.rate=.5;u.pitch=1;
+  window.speechSynthesis.speak(u);
+}
+
+function shuffleArr(a){
+  var arr=a.slice();
+  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=arr[i];arr[i]=arr[j];arr[j]=t; }
+  return arr;
+}
+
+// ============================================================
+//  星空背景
+// ============================================================
+(function(){
+  var layer=document.getElementById('starsLayer');
+  for(var i=0;i<80;i++){
+    var dot=document.createElement('div');dot.className='star-dot';
+    var size=Math.random()*2.5+1;
+    dot.style.cssText='width:'+size+'px;height:'+size+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--d:'+(Math.random()*2+1.5)+'s;--delay:'+(Math.random()*1.5)+'s';
+    layer.appendChild(dot);
+  }
+})();
+
+// ============================================================
+//  护眼计时器
+// ============================================================
+var restTimer = null;
+function startRestTimer(){
+  if(restTimer) clearInterval(restTimer);
+  restTimer = setInterval(function(){
+    document.getElementById('overlayRest').classList.add('active');
+  },8*60*1000);
+}
+function closeRestOverlay(){
+  document.getElementById('overlayRest').classList.remove('active');
+  startRestTimer();
+}
+startRestTimer();
+// ============================================================
+//  SCREEN 2: 星际地图
+// ============================================================
+var planetEmojis = {1:'🪐',2:'🌍',3:'🎭',4:'💚',5:'🍎',6:'🌿'};
+
+function renderStarMap(){
+  var grid=document.getElementById('mapGrid');
+  grid.innerHTML='';
+  for(var u=1;u<=6;u++){
+    var p=getUnitProgress(G,u);
+    var div=document.createElement('div');
+    div.className='planet-card';
+    if(p.badge) div.classList.add('perfect');
+    else if(p.defenseDone) div.classList.add('cleared');
+    // all units freely accessible
+
+    var starsHtml='';
+    for(var i=1;i<=3;i++){
+      starsHtml+='<span class="'+(i<=p.matchStars?'earned':'lost')+'">⭐</span>';
+    }
+
+    div.innerHTML='<div class="planet-emoji">'+planetEmojis[u]+'</div><div class="planet-name">Unit '+u+'<br>'+getUnitName(u).split(' ').slice(1).join(' ')+'</div><div class="planet-stars">'+starsHtml+'</div>'+(p.badge?'<div class="planet-badge">🏅 已收集徽章</div>':'');
+
+    (function(unit){ div.onclick=function(){ currentUnit=unit; enterUnitFlow(unit); }; })(u);
+    grid.appendChild(div);
+  }
+}
+
+function enterUnitFlow(u){
+  var p=getUnitProgress(G,u);
+  if(!p.flashDone){ navigateTo('flash'); initFlashStage(u); }
+  else if(p.matchStars===0){ navigateTo('match'); initMatchStage(u); }
+  else if(!p.defenseDone){ navigateTo('defense'); initDefenseStage(u); }
+  else { navigateTo('flash'); initFlashStage(u); }
+}
+
+// ============================================================
+//  STAGE 1: 单词闪卡
+// ============================================================
+var flashIdx=0, flashWords=[], flashMode="basic";
+
+function setFlashMode(mode){
+  flashMode=mode;
+  var btns=document.querySelectorAll('#flashModeSelect button');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
+  document.querySelector('#flashModeSelect button[data-mode="'+mode+'"]').classList.add('active');
+  initFlashStage(currentUnit);
+}
+
+function initFlashStage(u){ updateStageTabs();
+  var words=getUnitWords(u);
+  flashWords=[];
+  for(var i=0;i<words.length;i++){
+    words[i].isWord=true; flashWords.push(words[i]);
+    if(flashMode==='advanced'){
+      for(var j=0;j<PHRASE_DATA.length;j++){
+        if(PHRASE_DATA[j].unit===u&&PHRASE_DATA[j].word===words[i].en){
+          var p=PHRASE_DATA[j]; p.isWord=false; flashWords.push(p);
+        }
+      }
+    }
+  }
+  flashIdx=0;
+  updateFlashCard();
+  document.getElementById('flashBarFill').style.width='0%';
+  document.getElementById('flashBarText').textContent='0/'+flashWords.length;
+  document.getElementById('btnFlashDone').style.display='none';
+  document.getElementById('btnFlashDone').onclick=finishFlashStage;
+}
+
+function updateFlashCard(){
+  if(flashIdx>=flashWords.length){ finishFlashStage(); return; }
+  var w=flashWords[flashIdx];
+  document.getElementById('flashEmoji').textContent=w.emoji||'📖';
+  document.getElementById('flashWord').textContent=w.en;
+  document.getElementById('flashPh').textContent=w.ph||'';
+  document.getElementById('flashUnitTag').textContent='Unit '+w.unit+' · '+getUnitName(w.unit).split(' ')[0];
+  document.getElementById('flashZh').textContent=w.zh;
+  document.getElementById('flashTip').textContent='💡 '+w.tip;
+  document.getElementById('flashCard').classList.remove('flipped');
+  var starBtn=document.getElementById('btnFlashStar');
+  if(isStarred(G,w.en)) starBtn.classList.add('starred'); else starBtn.classList.remove('starred');
+
+  var pct=Math.round((flashIdx+1)/flashWords.length*100);
+  document.getElementById('flashBarFill').style.width=pct+'%';
+  document.getElementById('flashBarText').textContent=(flashIdx+1)+'/'+flashWords.length;
+
+  if(flashIdx>=flashWords.length-1){
+    document.getElementById('btnFlashDone').style.display='inline-flex';
+    document.getElementById('btnFlashDone').textContent='✅ 单词+词组全部学完！';
+  }
+  speakWord(w.en);
+}
+
+function flipFlashCard(){ document.getElementById('flashCard').classList.toggle('flipped'); sfxFlip(); }
+function speakFlashWord(){ if(flashIdx<flashWords.length) speakWord(flashWords[flashIdx].en); }
+
+
+
+function toggleFlashStar(){
+  if(flashIdx>=flashWords.length) return;
+  var w=flashWords[flashIdx];
+  toggleStarWord(G,w.en,w.unit); saveState(G);
+  var starBtn=document.getElementById('btnFlashStar');
+  if(isStarred(G,w.en)) starBtn.classList.add('starred'); else starBtn.classList.remove('starred');
+  sfxClick();
+}
+
+function prevFlashCard(){ if(flashIdx>0){ flashIdx--; updateFlashCard(); sfxFlip(); } }
+function nextFlashCard(){ if(flashIdx<flashWords.length-1){ flashIdx++; updateFlashCard(); sfxFlip(); } else if(flashIdx===flashWords.length-1){ finishFlashStage(); } }
+
+function finishFlashStage(){
+  var p=getUnitProgress(G,currentUnit);
+  p.flashDone=true; saveState(G);
+  sfxCorrect();
+  var btn=document.getElementById('btnFlashDone');
+  btn.textContent='✅ 学完啦！前往消消配对 →';
+  btn.style.display='inline-flex';
+  btn.onclick=function(){ navigateTo('match');initMatchStage(currentUnit); };
+}
+
+// ============================================================
+//  STAGE 2: 消消配对（翻牌点击配对）
+// ============================================================
+var matchMode='basic';
+var matchCards=[], matchSel=[], matchPairsDone=0, matchErrors=0, matchTotalPairs=0;
+var matchLocked=false;
+
+function setMatchMode(mode){
+  matchMode=mode;
+  var btns=document.querySelectorAll('#matchModeSelect button');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
+  document.querySelector('#matchModeSelect button[data-mode="'+mode+'"]').classList.add('active');
+  initMatchStage(currentUnit);
+}
+
+function initMatchStage(u){ updateStageTabs();
+  currentUnit=u;
+  matchSel=[];matchPairsDone=0;matchErrors=0;matchLocked=false;
+
+  var words=getUnitWords(u).slice();
+  if(matchMode==='advanced'){
+    var wrongKeys=Object.keys(G.wrongWords);
+    for(var i=0;i<wrongKeys.length;i++){
+      var en=wrongKeys[i];
+      var found=false;
+      for(var j=0;j<words.length;j++){ if(words[j].en===en){ found=true;break; } }
+      if(!found){
+        for(var k=0;k<VOCABULARY_DATA.length;k++){ if(VOCABULARY_DATA[k].en===en){ words.push(VOCABULARY_DATA[k]);break; } }
+      }
+    }
+  }
+  if(words.length>8) words=shuffleArr(words).slice(0,8);
+
+  matchTotalPairs=words.length;
+  matchCards=[];
+  for(var i=0;i<words.length;i++){
+    var w=words[i];
+    matchCards.push({type:'en',text:w.en,en:w.en,id:w.en+'_en'});
+    matchCards.push({type:'zh',text:w.zh,en:w.en,id:w.en+'_zh'});
+  }
+  matchCards=shuffleArr(matchCards);
+
+  document.getElementById('matchPairs').textContent='0';
+  document.getElementById('matchTotal').textContent=matchTotalPairs;
+  document.getElementById('matchErrors').textContent='0';
+  renderMatchGrid();
+}
+
+function renderMatchGrid(){
+  var grid=document.getElementById('matchGrid');
+  grid.innerHTML='';
+  var cols=matchCards.length<=12?3:4;
+  grid.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  for(var i=0;i<matchCards.length;i++){
+    var div=document.createElement('div');
+    div.className='match-card '+(matchCards[i].type==='en'?'en-card':'zh-card');
+    div.textContent=matchCards[i].text;
+    div.dataset.index=i;
+    div.dataset.id=matchCards[i].id;
+    (function(idx,el){ el.onclick=function(){ onMatchClick(idx,el); }; })(i,div);
+    grid.appendChild(div);
+  }
+}
+
+function onMatchClick(i,el){
+  if(matchLocked) return;
+  if(el.classList.contains('matched')) return;
+  if(matchSel.length>=2) return;
+  if(matchSel.length===1&&matchSel[0].idx===i) return;
+
+  sfxClick();
+  el.classList.add('selected');
+  matchSel.push({idx:i,el:el,card:matchCards[i]});
+
+  if(matchSel.length===2){
+    var a=matchSel[0].card, b=matchSel[1].card;
+    if(a.en===b.en&&a.type!==b.type){
+      matchLocked=true;
+      setTimeout(function(){
+        matchSel[0].el.classList.add('matched');
+        matchSel[1].el.classList.add('matched');
+        matchSel[0].el.classList.remove('selected');
+        matchSel[1].el.classList.remove('selected');
+        matchPairsDone++;
+        document.getElementById('matchPairs').textContent=matchPairsDone;
+        sfxMatch();
+        matchSel=[];matchLocked=false;
+        if(matchPairsDone>=matchTotalPairs) finishMatchStage();
+      },300);
+    }else{
+      matchErrors++;
+      document.getElementById('matchErrors').textContent=matchErrors;
+      sfxWrong();
+      matchSel[0].el.classList.add('wrong');
+      matchSel[1].el.classList.add('wrong');
+      matchLocked=true;
+      setTimeout(function(){
+        if(matchSel[0]&&matchSel[0].el) matchSel[0].el.classList.remove('selected','wrong');
+        if(matchSel[1]&&matchSel[1].el) matchSel[1].el.classList.remove('selected','wrong');
+        matchSel=[];matchLocked=false;
+      },500);
+    }
+  }
+}
+
+function useMatchHint(){
+  if(matchLocked||matchSel.length!==1) return;
+  speakWord(matchSel[0].card.en);
+  var cards=document.querySelectorAll('.match-card');
+  for(var i=0;i<cards.length;i++){
+    if(cards[i].dataset.id===matchSel[0].card.en+'_en'||cards[i].dataset.id===matchSel[0].card.en+'_zh')
+      cards[i].classList.add('hint-glow');
+  }
+  setTimeout(function(){
+    var cs=document.querySelectorAll('.hint-glow');
+    for(var i=0;i<cs.length;i++) cs[i].classList.remove('hint-glow');
+  },1500);
+}
+
+function finishMatchStage(){
+  var stars=1;
+  if(matchErrors<=2) stars=3;
+  else if(matchErrors<=5) stars=2;
+  var p=getUnitProgress(G,currentUnit);
+  p.matchStars=Math.max(p.matchStars,stars);
+  saveState(G);
+  sfxCorrect();
+  showResult('match',stars,{pairs:matchTotalPairs,errors:matchErrors});
+}
+// ============================================================
+//  STAGE 3: 太空防御
+// ============================================================
+var defMode='listen';
+var defWords=[], defIdx=0, defCorrect=0, defWrong=0, defShields=5, defCombo=0;
+var defTimer=null, defTimeLeft=10;
+var defAnswered=false;
+
+function setDefenseMode(mode){
+  defMode=mode;
+  var btns=document.querySelectorAll('#defenseModeSelect button');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
+  document.querySelector('#defenseModeSelect button[data-mode="'+mode+'"]').classList.add('active');
+  initDefenseStage(currentUnit);
+}
+
+function initDefenseStage(u){ updateStageTabs();
+  currentUnit=u;
+  var p=getUnitProgress(G,u);
+  defShields=p.matchStars||3;
+  defCorrect=0;defWrong=0;defCombo=0;defIdx=0;defAnswered=false;
+
+  defWords=getUnitWords(u).slice();
+  // mix in wrong words
+  var wrongKeys=Object.keys(G.wrongWords);
+  for(var i=0;i<wrongKeys.length;i++){
+    var found=false;
+    for(var j=0;j<defWords.length;j++){ if(defWords[j].en===wrongKeys[i]){ found=true;break; } }
+    if(!found){
+      for(var k=0;k<VOCABULARY_DATA.length;k++){ if(VOCABULARY_DATA[k].en===wrongKeys[i]){ defWords.push(VOCABULARY_DATA[k]);break; } }
+    }
+  }
+  defWords=shuffleArr(defWords);
+  if(defWords.length>10) defWords=defWords.slice(0,10);
+
+  updateDefenseHUD();
+  nextDefenseQuestion();
+}
+
+function updateDefenseHUD(){
+  var shieldsEl=document.getElementById('defenseShields');
+  var html='';
+  for(var i=0;i<defShields;i++) html+='🛡️';
+  shieldsEl.innerHTML=html||'💔';
+  document.getElementById('defenseCombo').textContent=defCombo>=2?'🔥 '+defCombo+' 连击！':'';
+}
+
+function nextDefenseQuestion(){
+  if(defIdx>=defWords.length||defShields<=0){
+    finishDefenseStage();
+    return;
+  }
+  defAnswered=false;
+  var w=defWords[defIdx];
+  document.getElementById('defenseEmojiHint').textContent=w.emoji||'';
+  document.getElementById('defenseZhHint').textContent=w.zh;
+  document.getElementById('defenseWordLg').textContent='';
+
+  if(defMode==='listen'){
+    document.getElementById('defenseOptions').style.display='grid';
+    document.getElementById('defenseInputArea').style.display='none';
+    document.getElementById('defenseWordLg').textContent='🔊 听听看…';
+    speakWord(w.en);
+    buildListenOptions(w);
+  }else{
+    document.getElementById('defenseOptions').style.display='none';
+    document.getElementById('defenseInputArea').style.display='flex';
+    document.getElementById('defenseWordLg').textContent=w.en;
+    document.getElementById('defenseInput').value='';
+    document.getElementById('defenseInput').focus();
+  }
+
+  startDefenseTimer();
+}
+
+function buildListenOptions(correctWord){
+  var options=[correctWord];
+  var pool=[];
+  for(var i=0;i<VOCABULARY_DATA.length;i++){
+    if(VOCABULARY_DATA[i].en!==correctWord.en&&VOCABULARY_DATA[i].unit===correctWord.unit)
+      pool.push(VOCABULARY_DATA[i]);
+  }
+  pool=shuffleArr(pool);
+  for(var i=0;i<pool.length&&options.length<4;i++) options.push(pool[i]);
+  options=shuffleArr(options);
+
+  var container=document.getElementById('defenseOptions');
+  container.innerHTML='';
+  for(var i=0;i<options.length;i++){
+    var btn=document.createElement('div');
+    btn.className='defense-option';
+    btn.textContent=options[i].zh;
+    (function(opt,el,correct){
+      el.onclick=function(){
+        if(defAnswered) return;
+        defAnswered=true;
+        clearInterval(defTimer);
+        if(opt.en===correct.en){
+          el.classList.add('correct');
+          onDefenseCorrect();
+        }else{
+          el.classList.add('wrong');
+          // highlight correct
+          var all=document.querySelectorAll('.defense-option');
+          for(var j=0;j<all.length;j++){ if(all[j].textContent===correct.zh) all[j].classList.add('correct'); }
+          onDefenseWrong(correct);
+        }
+      };
+    })(options[i],btn,correctWord);
+    container.appendChild(btn);
+  }
+}
+
+function submitSpell(){
+  if(defAnswered) return;
+  defAnswered=true;
+  clearInterval(defTimer);
+  var input=document.getElementById('defenseInput');
+  var answer=input.value.trim();
+  var correct=defWords[defIdx];
+  // fuzzy match: case insensitive, ignore spaces/hyphens
+  var normAnswer=answer.toLowerCase().replace(/[^a-z]/g,'');
+  var normCorrect=correct.en.toLowerCase().replace(/[^a-z]/g,'');
+  if(normAnswer===normCorrect){
+    onDefenseCorrect();
+  }else{
+    onDefenseWrong(correct);
+    // show hint
+    var hint='';
+    for(var i=0;i<correct.en.length;i++){
+      if(i<answer.length&&correct.en[i].toLowerCase()===answer[i].toLowerCase()) hint+=correct.en[i];
+      else hint+='_';
+    }
+    document.getElementById('defenseWordLg').textContent='答案：'+correct.en+'  (你的输入：'+answer+')';
+  }
+}
+
+function onDefenseCorrect(){
+  defCorrect++;defCombo++;
+  sfxCorrect();sfxLaser();
+  flashSpaceBase('correct');
+  var comboEl=document.getElementById('defenseCombo');
+  comboEl.textContent='🔥 '+defCombo+' 连击！';
+  comboEl.style.transform='scale(1.3)';
+  setTimeout(function(){ comboEl.style.transform='scale(1)'; },300);
+  setTimeout(function(){ defIdx++; nextDefenseQuestion(); },800);
+}
+
+function onDefenseWrong(correct){
+  defWrong++;defCombo=0;
+  defShields--;
+  sfxWrong();sfxShieldBreak();
+  flashSpaceBase('wrong');
+  updateDefenseHUD();
+  addWrongWord(G,correct.en,correct.zh,correct.unit);
+  saveState(G);
+  setTimeout(function(){ defIdx++; nextDefenseQuestion(); },1200);
+}
+
+function startDefenseTimer(){
+  clearInterval(defTimer);
+  defTimeLeft=10;
+  document.getElementById('defenseTimer').textContent='⏱ '+defTimeLeft;
+  document.getElementById('defenseTimer').classList.remove('urgent');
+  defTimer=setInterval(function(){
+    defTimeLeft--;
+    document.getElementById('defenseTimer').textContent='⏱ '+defTimeLeft;
+    if(defTimeLeft<=3) document.getElementById('defenseTimer').classList.add('urgent');
+    if(defTimeLeft<=0){
+      clearInterval(defTimer);
+      if(!defAnswered){
+        defAnswered=true;
+        defWrong++;defCombo=0;
+        defShields--;
+        sfxWrong();sfxShieldBreak();
+        flashSpaceBase('wrong');
+        updateDefenseHUD();
+        var w=defWords[defIdx];
+        addWrongWord(G,w.en,w.zh,w.unit);
+        saveState(G);
+        setTimeout(function(){ defIdx++; nextDefenseQuestion(); },800);
+      }
+    }
+  },1000);
+}
+
+function flashSpaceBase(type){
+  var base=document.getElementById('spaceBase');
+  var enemy=document.getElementById('spaceEnemy');
+  if(type==='correct'){
+    base.style.transform='scale(1.2)';
+    enemy.style.transform='scale(0.5) rotate(20deg)';
+    enemy.style.opacity='0.4';
+    setTimeout(function(){ base.style.transform='scale(1)'; enemy.style.transform=''; enemy.style.opacity='1'; },500);
+  }else{
+    base.style.transform='translateX(-10px)';
+    base.style.opacity='0.6';
+    setTimeout(function(){ base.style.transform=''; base.style.opacity='1'; },400);
+  }
+}
+
+function finishDefenseStage(){
+  clearInterval(defTimer);
+  var p=getUnitProgress(G,currentUnit);
+  p.defenseDone=true;
+  var stars=1;
+  if(defShields>=4&&defWrong<=1) stars=3;
+  else if(defShields>=2&&defWrong<=3) stars=2;
+  p.matchStars=Math.max(p.matchStars,stars);
+
+  // award badge
+  if(!p.badge){ p.badge=true; if(stars===3) p.skin=true; }
+  G.rank=calcRank(G);
+  saveState(G);
+  sfxBadge();
+  showResult('defense',stars,{correct:defCorrect,wrong:defWrong,shields:defShields});
+}
+// ============================================================
+//  结果页
+// ============================================================
+function showResult(stage,stars,data){
+  navigateTo('result');
+  var starsEl=document.getElementById('resultStars');
+  var sHtml='';
+  for(var i=1;i<=3;i++) sHtml+='<span class="'+(i<=stars?'earned':'')+'" style="opacity:'+(i<=stars?1:.3)+'">⭐</span>';
+  starsEl.innerHTML=sHtml;
+
+  var titleEl=document.getElementById('resultTitle');
+  var badgeEl=document.getElementById('resultBadge');
+  var statsEl=document.getElementById('resultStats');
+  var actionsEl=document.getElementById('resultActions');
+
+  if(stars===3){ titleEl.textContent='🎉 完美通关！太厉害了！'; badgeEl.textContent='🏅'; }
+  else if(stars===2){ titleEl.textContent='👍 非常棒！继续加油！'; badgeEl.textContent='🌟'; }
+  else { titleEl.textContent='💪 通关成功！再来一次会更好！'; badgeEl.textContent='⭐'; }
+
+  var statsHtml='';
+  if(stage==='match'){
+    statsHtml+='<div class="result-stat"><div class="val">'+data.pairs+'</div><div class="lbl">配对成功</div></div>';
+    statsHtml+='<div class="result-stat"><div class="val">'+data.errors+'</div><div class="lbl">小小失误</div></div>';
+  }
+  if(stage==='defense'){
+    statsHtml+='<div class="result-stat"><div class="val">'+data.correct+'</div><div class="lbl">答对题数</div></div>';
+    statsHtml+='<div class="result-stat"><div class="val">'+data.wrong+'</div><div class="lbl">需要加油</div></div>';
+    statsHtml+='<div class="result-stat"><div class="val">'+data.shields+'</div><div class="lbl">剩余护盾</div></div>';
+  }
+  statsEl.innerHTML=statsHtml;
+
+  var acts='';
+  if(stage==='match'){
+    acts+='<button class="btn btn-primary" onclick="initDefenseStage('+currentUnit+');navigateTo(\'defense\')">🚀 进入太空防御！</button>';
+  }
+  acts+='<button class="btn btn-sky" onclick="navigateTo(\'map\')">🗺️ 返回星图</button>';
+  if(stars<3) acts+='<button class="btn btn-outline btn-sm" onclick="retryStage()">🔄 重新挑战</button>';
+  actionsEl.innerHTML=acts;
+}
+
+function retryStage(){
+  var p=getUnitProgress(G,currentUnit);
+  if(!p.flashDone){ navigateTo('flash');initFlashStage(currentUnit); }
+  else if(p.matchStars>0){ navigateTo('defense');initDefenseStage(currentUnit); }
+  else { navigateTo('match');initMatchStage(currentUnit); }
+}
+
+// ============================================================
+//  证书
+// ============================================================
+function showCertificate(){
+  var text=document.getElementById('certificateText');
+  var rank=getRankName(calcRank(G));
+  var badgeCount=0;
+  for(var u=1;u<=6;u++){ if(G.units[u]&&G.units[u].badge) badgeCount++; }
+  text.innerHTML='恭喜你，小小星际领航员！<br><br>🏅 已收集 <b>'+badgeCount+'/6</b> 枚星球徽章<br>⭐ 军衔：<b>'+rank+'</b><br>🌍 新版PEP五年级上册全部通关<br><br>你真是太厉害了！<br>期待你在下册继续星际探险！🚀';
+  document.getElementById('overlayCertificate').classList.add('active');
+  sfxBadge();
+}
+
+function closeCertificate(){ document.getElementById('overlayCertificate').classList.remove('active'); }
+
+function resetAllData(){
+  if(confirm('确定要清除所有学习进度吗？\n\n这将删除：\n· 已收集的徽章\n· 闯关星级\n· 错题记录\n· 收藏单词\n· 领航员军衔\n\n此操作不可恢复！')){
+    localStorage.removeItem(STORAGE_KEY);
+    G=defaultState();
+    saveState(G);
+    alert('✅ 数据已清除！即将返回首页。');
+    navigateTo('welcome');
+  }
+}
+
+// ============================================================
+//  SCREEN 7: 错题复习
+// ============================================================
+var wrongFilter='all';
+
+function filterWrongWords(filter){
+  wrongFilter=filter;
+  var btns=document.querySelectorAll('#wrongFilter button');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
+  document.querySelector('#wrongFilter button[data-unit="'+filter+'"]').classList.add('active');
+  renderWrongWords(filter);
+}
+
+function renderWrongWords(filter){
+  var list=document.getElementById('wrongList');
+  var empty=document.getElementById('wrongEmpty');
+  list.innerHTML='';
+
+  var entries=[];
+  var keys=Object.keys(G.wrongWords);
+  for(var i=0;i<keys.length;i++){
+    var en=keys[i], data=G.wrongWords[en];
+    if(filter!=='all'&&data.unit!==parseInt(filter)) continue;
+    entries.push({en:en,zh:data.zh||'',unit:data.unit,count:data.count});
+  }
+  entries.sort(function(a,b){ return b.count-a.count; });
+
+  if(entries.length===0){
+    list.style.display='none';empty.style.display='block';return;
+  }
+  list.style.display='flex';empty.style.display='none';
+
+  for(var i=0;i<entries.length;i++){
+    var e=entries[i];
+    var div=document.createElement('div');
+    div.className='wrong-item';
+    div.innerHTML='<div><span class="wi-word">'+e.en+'</span><span class="wi-zh">'+e.zh+'</span></div><span class="wi-count">错'+e.count+'次</span><button class="btn btn-sm btn-outline" onclick="speakWord(\''+e.en+'\')">🔊</button>';
+    list.appendChild(div);
+  }
+}
+
+// ============================================================
+//  SCREEN 8: 荣誉勋章
+// ============================================================
+
+
+
+
+// ============================================================
+//  词组闪卡数据（英文 + 中文翻译）
+// ============================================================
+var PHRASE_DATA = [
+  // Unit 1
+  {en:"a good team",zh:"一支好队伍",word:"team",unit:1},{en:"our team",zh:"我们的队伍",word:"team",unit:1},
+  {en:"a good player",zh:"一个好运动员",word:"player",unit:1},{en:"football player",zh:"足球运动员",word:"player",unit:1},
+  {en:"like him",zh:"喜欢他",word:"him",unit:1},{en:"with him",zh:"和他一起",word:"him",unit:1},
+  {en:"a lovely day",zh:"美好的一天",word:"lovely",unit:1},{en:"a lovely girl",zh:"一个可爱的女孩",word:"lovely",unit:1},
+  {en:"a clever boy",zh:"一个聪明的男孩",word:"clever",unit:1},{en:"very clever",zh:"非常聪明",word:"clever",unit:1},
+  {en:"a young teacher",zh:"一位年轻的老师",word:"young",unit:1},{en:"too young",zh:"太年轻了",word:"young",unit:1},
+  {en:"a hard-working student",zh:"一个勤奋的学生",word:"hard-working",unit:1},{en:"science class",zh:"科学课",word:"science",unit:1},
+  {en:"a science teacher",zh:"一位科学老师",word:"science",unit:1},{en:"a toy robot",zh:"一个玩具机器人",word:"robot",unit:1},
+  {en:"make a robot",zh:"做一个机器人",word:"robot",unit:1},{en:"jump high",zh:"跳得高",word:"jump",unit:1},
+  {en:"jump rope",zh:"跳绳",word:"jump",unit:1},{en:"a long rope",zh:"一根长绳",word:"rope",unit:1},
+  {en:"play the piano",zh:"弹钢琴",word:"piano",unit:1},{en:"play chess",zh:"下国际象棋",word:"chess",unit:1},
+  {en:"in front of",zh:"在……前面",word:"front",unit:1},{en:"very easy",zh:"非常简单",word:"easy",unit:1},
+  {en:"an easy question",zh:"一个简单的问题",word:"easy",unit:1},{en:"a film star",zh:"电影明星",word:"star",unit:1},
+  {en:"a pop star",zh:"流行歌手",word:"star",unit:1},{en:"a wonderful day",zh:"精彩的一天",word:"wonderful",unit:1},
+  {en:"in Australia",zh:"在澳大利亚",word:"Australia",unit:1},{en:"from Australia",zh:"来自澳大利亚",word:"Australia",unit:1},
+  // Unit 2
+  {en:"feel sad",zh:"感到难过",word:"sad",unit:2},{en:"look sad",zh:"看起来难过",word:"sad",unit:2},
+  {en:"What's the matter?",zh:"怎么了？",word:"matter",unit:2},{en:"a school project",zh:"学校项目",word:"project",unit:2},
+  {en:"do a project",zh:"做一个项目",word:"project",unit:2},{en:"in the centre",zh:"在中心",word:"centre",unit:2},
+  {en:"shopping centre",zh:"购物中心",word:"centre",unit:2},{en:"I agree",zh:"我同意",word:"agree",unit:2},
+  {en:"agree with",zh:"同意……",word:"agree",unit:2},{en:"finish homework",zh:"完成作业",word:"finish",unit:2},
+  {en:"finish school",zh:"放学",word:"finish",unit:2},{en:"on Monday",zh:"在星期一",word:"Monday",unit:2},
+  {en:"Monday morning",zh:"星期一早上",word:"Monday",unit:2},{en:"feel worried",zh:"感到担心",word:"worried",unit:2},
+  {en:"be worried about",zh:"担心……",word:"worried",unit:2},{en:"both of us",zh:"我们俩",word:"both",unit:2},
+  {en:"both A and B",zh:"A和B都",word:"both",unit:2},{en:"feel excited",zh:"感到兴奋",word:"excited",unit:2},
+  {en:"something wrong",zh:"出了差错",word:"wrong",unit:2},{en:"wrong answer",zh:"错误答案",word:"wrong",unit:2},
+  {en:"feel angry",zh:"感到生气",word:"angry",unit:2},{en:"get angry",zh:"变得生气",word:"angry",unit:2},
+  {en:"be afraid of",zh:"害怕……",word:"afraid",unit:2},{en:"my parents",zh:"我的父母",word:"parent",unit:2},
+  {en:"ask a question",zh:"问一个问题",word:"ask",unit:2},{en:"ask for help",zh:"请求帮助",word:"ask",unit:2},
+  {en:"move to",zh:"搬到……",word:"move",unit:2},{en:"move house",zh:"搬家",word:"move",unit:2},
+  {en:"Yours,",zh:"你的（书信结尾）",word:"yours",unit:2},
+  // Unit 3
+  {en:"on Wednesday",zh:"在星期三",word:"Wednesday",unit:3},{en:"favourite subject",zh:"最喜欢的科目",word:"subject",unit:3},
+  {en:"school subject",zh:"学校科目",word:"subject",unit:3},{en:"on Tuesday",zh:"在星期二",word:"Tuesday",unit:3},
+  {en:"on Friday",zh:"在星期五",word:"Friday",unit:3},{en:"Friday evening",zh:"星期五晚上",word:"Friday",unit:3},
+  {en:"because of",zh:"因为……",word:"because",unit:3},{en:"on Thursday",zh:"在星期四",word:"Thursday",unit:3},
+  {en:"start school",zh:"开学",word:"start",unit:3},{en:"on the weekend",zh:"在周末",word:"weekend",unit:3},
+  {en:"this weekend",zh:"这个周末",word:"weekend",unit:3},{en:"on Saturday",zh:"在星期六",word:"Saturday",unit:3},
+  {en:"on Sunday",zh:"在星期日",word:"Sunday",unit:3},{en:"English lesson",zh:"英语课",word:"lesson",unit:3},
+  {en:"have a lesson",zh:"上课",word:"lesson",unit:3},{en:"in the evening",zh:"在晚上",word:"evening",unit:3},
+  {en:"this evening",zh:"今天晚上",word:"evening",unit:3},{en:"answer the question",zh:"回答问题",word:"answer",unit:3},
+  {en:"play ping-pong",zh:"打乒乓球",word:"ping-pong",unit:3},{en:"at night",zh:"在夜晚",word:"night",unit:3},
+  {en:"good night",zh:"晚安",word:"night",unit:3},{en:"visit grandparents",zh:"看望祖父母",word:"visit",unit:3},
+  {en:"my grandparents",zh:"我的祖父母",word:"grandparent",unit:3},
+  // Unit 4
+  {en:"stay healthy",zh:"保持健康",word:"stay",unit:4},{en:"stay at home",zh:"待在家里",word:"stay",unit:4},
+  {en:"You should...",zh:"你应该……",word:"should",unit:4},{en:"should not",zh:"不应该",word:"should",unit:4},
+  {en:"have the flu",zh:"得了流感",word:"flu",unit:4},{en:"get the flu",zh:"染上流感",word:"flu",unit:4},
+  {en:"do exercise",zh:"做运动",word:"exercise",unit:4},{en:"take exercise",zh:"锻炼身体",word:"exercise",unit:4},
+  {en:"enough sleep",zh:"充足的睡眠",word:"enough",unit:4},{en:"good enough",zh:"足够好",word:"enough",unit:4},
+  {en:"good habit",zh:"好习惯",word:"habit",unit:4},{en:"bad habit",zh:"坏习惯",word:"habit",unit:4},
+  {en:"TV show",zh:"电视节目",word:"show",unit:4},{en:"mobile phone",zh:"手机",word:"phone",unit:4},
+  {en:"on the phone",zh:"打电话中",word:"phone",unit:4},{en:"and then",zh:"然后",word:"then",unit:4},
+  {en:"have a rest",zh:"休息一下",word:"rest",unit:4},{en:"take a rest",zh:"休息",word:"rest",unit:4},
+  {en:"take care of yourself",zh:"照顾好你自己",word:"take care of",unit:4},{en:"check your work",zh:"检查你的作业",word:"check",unit:4},
+  {en:"less sugar",zh:"少一点糖",word:"less",unit:4},{en:"less time",zh:"更少的时间",word:"less",unit:4},
+  {en:"brush your teeth",zh:"刷牙",word:"brush",unit:4},{en:"toothbrush",zh:"牙刷",word:"tooth",unit:4},
+  {en:"twice a day",zh:"一天两次",word:"twice",unit:4},{en:"an hour",zh:"一小时",word:"hour",unit:4},
+  {en:"one hour",zh:"一个小时",word:"hour",unit:4},{en:"free time",zh:"空闲时间",word:"free",unit:4},
+  // Unit 5
+  {en:"I'm hungry",zh:"我饿了",word:"hungry",unit:5},{en:"feel hungry",zh:"感到饿",word:"hungry",unit:5},
+  {en:"beef noodles",zh:"牛肉面",word:"beef",unit:5},{en:"some beef",zh:"一些牛肉",word:"beef",unit:5},
+  {en:"an ice cream",zh:"一个冰淇淋",word:"ice cream",unit:5},{en:"eat ice cream",zh:"吃冰淇淋",word:"ice cream",unit:5},
+  {en:"a little",zh:"一点点",word:"little",unit:5},{en:"a little milk",zh:"一点牛奶",word:"little",unit:5},
+  {en:"eat dumplings",zh:"吃饺子",word:"dumpling",unit:5},{en:"make dumplings",zh:"包饺子",word:"dumpling",unit:5},
+  {en:"a cup of tea",zh:"一杯茶",word:"tea",unit:5},{en:"drink tea",zh:"喝茶",word:"tea",unit:5},
+  {en:"a hamburger",zh:"一个汉堡",word:"hamburger",unit:5},{en:"eat a hamburger",zh:"吃汉堡",word:"hamburger",unit:5},
+  {en:"Mrs Green",zh:"格林夫人",word:"Mrs",unit:5},{en:"coconut milk",zh:"椰奶",word:"coconut",unit:5},
+  {en:"a coconut",zh:"一个椰子",word:"coconut",unit:5},{en:"an interesting book",zh:"一本有趣的书",word:"interesting",unit:5},
+  {en:"very interesting",zh:"非常有趣",word:"interesting",unit:5},{en:"plant a seed",zh:"种一颗种子",word:"seed",unit:5},
+  {en:"sunflower seed",zh:"葵花籽",word:"seed",unit:5},{en:"pull up",zh:"拔出来",word:"pull",unit:5},
+  {en:"pull out",zh:"拉出来",word:"pull",unit:5},{en:"pull up carrots",zh:"拔胡萝卜",word:"pull up",unit:5},
+  {en:"long stem",zh:"长长的茎",word:"stem",unit:5},{en:"plant stem",zh:"植物的茎",word:"stem",unit:5},
+  {en:"tree root",zh:"树根",word:"root",unit:5},{en:"plant root",zh:"植物的根",word:"root",unit:5},
+  {en:"lotus flower",zh:"莲花",word:"lotus",unit:5},{en:"lotus root",zh:"莲藕",word:"lotus",unit:5},
+  {en:"by the lake",zh:"在湖边",word:"lake",unit:5},{en:"in the lake",zh:"在湖里",word:"lake",unit:5},
+  {en:"the world",zh:"世界",word:"world",unit:5},{en:"around the world",zh:"世界各地",word:"world",unit:5},
+  {en:"round table",zh:"圆桌",word:"round",unit:5},{en:"round face",zh:"圆脸",word:"round",unit:5},
+  {en:"different from",zh:"与……不同",word:"different",unit:5},{en:"look different",zh:"看起来不同",word:"different",unit:5},
+  {en:"this way",zh:"这边",word:"way",unit:5},{en:"the best way",zh:"最好的方法",word:"way",unit:5},
+  // Unit 6
+  {en:"in the river",zh:"在河里",word:"river",unit:6},{en:"by the river",zh:"在河边",word:"river",unit:6},
+  {en:"in nature",zh:"在自然界中",word:"nature",unit:6},{en:"nature park",zh:"自然公园",word:"nature",unit:6},
+  {en:"a beautiful waterfall",zh:"一个美丽的瀑布",word:"waterfall",unit:6},{en:"in the forest",zh:"在森林里",word:"forest",unit:6},
+  {en:"go to the forest",zh:"去森林",word:"forest",unit:6},{en:"a famous place",zh:"一个著名的地方",word:"famous",unit:6},
+  {en:"be famous for",zh:"因……而出名",word:"famous",unit:6},{en:"climb a mountain",zh:"爬山",word:"mountain",unit:6},
+  {en:"high mountain",zh:"高山",word:"mountain",unit:6},{en:"take a trip",zh:"去旅行",word:"trip",unit:6},
+  {en:"a school trip",zh:"学校旅行",word:"trip",unit:6},{en:"very dangerous",zh:"非常危险",word:"dangerous",unit:6},
+  {en:"be dangerous",zh:"危险的",word:"dangerous",unit:6},{en:"heavy rain",zh:"大雨",word:"heavy",unit:6},
+  {en:"a heavy bag",zh:"一个沉重的包",word:"heavy",unit:6},{en:"in a hotel",zh:"在旅馆里",word:"hotel",unit:6},
+  {en:"stay at a hotel",zh:"住在旅馆",word:"hotel",unit:6},{en:"close the door",zh:"关门",word:"close",unit:6},
+  {en:"close the window",zh:"关窗",word:"close",unit:6},{en:"take an umbrella",zh:"带一把伞",word:"umbrella",unit:6},
+  {en:"an umbrella",zh:"一把雨伞",word:"umbrella",unit:6},{en:"wear a raincoat",zh:"穿雨衣",word:"raincoat",unit:6},
+  {en:"a yellow raincoat",zh:"一件黄色雨衣",word:"raincoat",unit:6},{en:"don't worry",zh:"别担心",word:"worry",unit:6},
+  {en:"worry about",zh:"担心……",word:"worry",unit:6},{en:"a fine day",zh:"晴朗的一天",word:"fine",unit:6},
+  {en:"I'm fine",zh:"我很好",word:"fine",unit:6},{en:"heavy fog",zh:"大雾",word:"fog",unit:6},
+  {en:"foggy day",zh:"雾天",word:"fog",unit:6},{en:"a big flood",zh:"大洪水",word:"flood",unit:6},
+  {en:"start a fire",zh:"生火",word:"fire",unit:6},{en:"on fire",zh:"着火",word:"fire",unit:6},
+  {en:"I know",zh:"我知道",word:"know",unit:6},{en:"Do you know?",zh:"你知道吗？",word:"know",unit:6},
+  {en:"before school",zh:"上学前",word:"before",unit:6},{en:"the day before",zh:"前一天",word:"before",unit:6},
+  {en:"go hiking in the mountain",zh:"去山里徒步",word:"go hiking",unit:6},{en:"bring me",zh:"带给我",word:"bring",unit:6},
+  {en:"bring to school",zh:"带到学校",word:"bring",unit:6}
+];
+
+
+
+function renderBadges(){
+  var rank=calcRank(G);
+  G.rank=rank;saveState(G);
+  document.getElementById('badgeRank').textContent='🚀 当前军衔：'+getRankName(rank);
+  document.getElementById('welcomeRank').textContent='⭐ '+getRankName(rank);
+
+  var grid=document.getElementById('badgeGrid');
+  grid.innerHTML='';
+  for(var u=1;u<=6;u++){
+    var p=getUnitProgress(G,u);
+    var div=document.createElement('div');
+    div.className='badge-item '+(p.badge?'earned':'locked');
+    div.innerHTML='<div class="badge-emoji">'+(p.badge?planetEmojis[u]:'🔒')+'</div><div class="badge-name">Unit '+u+' 徽章</div><div class="badge-desc">'+(p.badge?(p.skin?'✨ 完美通关（+皮肤）':'已收集'):'未解锁')+'</div>';
+    grid.appendChild(div);
+  }
+
+  var certBtn=document.getElementById('btnCertificate');
+  var allDone=true;
+  for(var u=1;u<=6;u++){ if(!G.units[u]||!G.units[u].badge){ allDone=false;break; } }
+  certBtn.style.display=allDone?'inline-flex':'none';
+}
+
+// ============================================================
+//  课文点读对话数据
+// ============================================================
+var DIALOGUE_DATA = {
+  1: {
+    title: "Unit 1 What's he like?",
+    subtitle: "他是怎样的人？",
+    scenes: [
+      {
+        title: "Part A · 新同学",
+        lines: [
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Hi, class. You'll have a new classmate. He's from Australia. His name is Oliver.",zh:"嗨，同学们。你们会有一个新同学。他来自澳大利亚。他叫奥利弗。"},
+          {speaker:"Mike",gender:"male",emoji:"👦",en:"What's he like?",zh:"他是什么样的人？"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"He's tall and strong.",zh:"他又高又壮。"},
+          {speaker:"Zhang Peng",gender:"male",emoji:"👦",en:"Is he good at football?",zh:"他足球踢得好吗？"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Yes, I think he is. He can run very fast.",zh:"是的，我觉得他很棒。他跑得非常快。"},
+          {speaker:"Zhang Peng",gender:"male",emoji:"👦",en:"Great! Our football team needs more players.",zh:"太好了！我们足球队需要更多球员。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Oliver can't speak Chinese. Would you like to help him, Zhang Peng?",zh:"奥利弗不会说中文。你愿意帮他吗，张鹏？"},
+          {speaker:"Zhang Peng",gender:"male",emoji:"👦",en:"Sure!",zh:"当然！"}
+        ]
+      },
+      {
+        title: "Part B · 科技艺术节",
+        lines: [
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"The Science and Art Festival is in two weeks.",zh:"科技艺术节在两周后举行。"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"Yes. What can you do for the festival?",zh:"是的。你能为艺术节做什么？"},
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"I can make a robot.",zh:"我可以做一个机器人。"},
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"Oh! I like making robots too. We can work together.",zh:"哦！我也喜欢做机器人。我们可以一起做。"},
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"Great! Can you make robots, Sarah?",zh:"太好了！莎拉，你会做机器人吗？"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"No, I can't.",zh:"不，我不会。"},
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"What can you do?",zh:"你能做什么？"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"I can dance.",zh:"我会跳舞。"},
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"That's great!",zh:"太棒了！"}
+        ]
+      }
+    ]
+  },
+  2: {
+    title: "Unit 2 My week",
+    subtitle: "我的一周",
+    scenes: [
+      {
+        title: "Part A · 有分歧怎么办",
+        lines: [
+          {speaker:"Chen Jie",gender:"female",emoji:"👧",en:"Hi, Mike. You look sad. What's the matter?",zh:"嗨，迈克。你看起来很伤心。怎么了？"},
+          {speaker:"Mike",gender:"male",emoji:"👦",en:"It's about our school project. John wants to go to the children's centre, but I want to clean up the park.",zh:"是关于我们的学校项目。约翰想去儿童中心，但我想打扫公园。"},
+          {speaker:"Chen Jie",gender:"female",emoji:"👧",en:"I see. So you don't agree with each other?",zh:"我明白了。所以你们意见不统一？"},
+          {speaker:"Mike",gender:"male",emoji:"👦",en:"That's right. And we have to finish our project by Monday. I'm so worried!",zh:"是的。而且我们必须在周一之前完成项目。我好担心！"},
+          {speaker:"Chen Jie",gender:"female",emoji:"👧",en:"Why not do both? I can help. We can work together.",zh:"为什么不两个都做呢？我可以帮忙。我们可以一起做。"},
+          {speaker:"Mike",gender:"male",emoji:"👦",en:"That's a good idea!",zh:"好主意！"}
+        ]
+      },
+      {
+        title: "Part B · 和好如初",
+        lines: [
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"What's the matter, John? You look worried.",zh:"怎么了，约翰？你看起来很担心。"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"It's about our project. Mike and I want to do different things.",zh:"是关于我们的项目。迈克和我想做不同的事情。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"I see. It's important to listen to each other.",zh:"我明白了。互相倾听很重要。"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"Yes, Miss White. I need to talk to Mike. But I'm afraid he's angry with me.",zh:"是的，怀特老师。我需要和迈克谈谈。但我怕他生我的气。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Look, here he comes. You can talk to him now.",zh:"看，他来了。你可以现在和他谈谈。"},
+          {speaker:"Mike",gender:"male",emoji:"👦",en:"John, I'm sorry. Let's do both projects! Chen Jie can work with us.",zh:"约翰，对不起。我们两个项目都做吧！陈洁可以和我们一起。"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"That's great!",zh:"太好了！"}
+        ]
+      }
+    ]
+  },
+  3: {
+    title: "Unit 3 What would you like?",
+    subtitle: "你想要什么？",
+    scenes: [
+      {
+        title: "Part A · 最喜欢的上学日",
+        lines: [
+          {speaker:"Grandpa",gender:"male",emoji:"👴",en:"What's your favourite day at school, John?",zh:"约翰，你在学校最喜欢哪一天？"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"Wednesday.",zh:"星期三。"},
+          {speaker:"Grandpa",gender:"male",emoji:"👴",en:"What do you have on Wednesdays?",zh:"星期三你有什么课？"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"I have Chinese, maths, music and PE.",zh:"我有语文、数学、音乐和体育。"},
+          {speaker:"Grandpa",gender:"male",emoji:"👴",en:"Maths is not easy.",zh:"数学不简单。"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"No, but I really like my maths teacher!",zh:"是的，但我真的很喜欢我的数学老师！"},
+          {speaker:"Grandpa",gender:"male",emoji:"👴",en:"That's good. Is music your favourite subject?",zh:"那很好。音乐是你最喜欢的科目吗？"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"Yes. I really like singing. And I like PE too.",zh:"是的。我真的很喜欢唱歌。我也喜欢体育。"},
+          {speaker:"Grandpa",gender:"male",emoji:"👴",en:"Great! Wednesday is your favourite day. But I like Tuesdays and Fridays.",zh:"太棒了！星期三是你最喜欢的日子。但我喜欢星期二和星期五。"},
+          {speaker:"John",gender:"male",emoji:"👦",en:"Why, Grandpa?",zh:"为什么，爷爷？"},
+          {speaker:"Grandpa",gender:"male",emoji:"👴",en:"Because I have my taijiquan class!",zh:"因为我有太极拳课！"}
+        ]
+      },
+      {
+        title: "Part B · 周末做什么",
+        lines: [
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"What do you usually do at the weekend, children?",zh:"孩子们，你们周末通常做什么？"},
+          {speaker:"Zhang Peng",gender:"male",emoji:"👦",en:"I often play football. Sometimes I play Chinese chess with my father.",zh:"我经常踢足球。有时我和爸爸下中国象棋。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"That's nice.",zh:"真好。"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"My mother works at the weekend, so I often cook lunch for my family.",zh:"我妈妈周末上班，所以我经常给家人做午饭。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Good girl! Does your mother work on Saturdays and Sundays?",zh:"好孩子！你妈妈周六周日都上班吗？"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"Yes, she does.",zh:"是的，她上班。"},
+          {speaker:"Chen Jie",gender:"female",emoji:"👧",en:"I do my homework on Saturdays. And I usually have pipa lessons on Sundays.",zh:"我周六做作业。周日我通常有琵琶课。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Great! Have a nice weekend, everyone!",zh:"太好了！祝大家周末愉快！"}
+        ]
+      }
+    ]
+  },
+  4: {
+    title: "Unit 4 What can you do?",
+    subtitle: "你能做什么？",
+    scenes: [
+      {
+        title: "Part A · 保持健康",
+        lines: [
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Mike has a cold today, children. He has to stay at home.",zh:"孩子们，迈克今天感冒了。他必须待在家里。"},
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"Oh no! It's flu season now.",zh:"哦不！现在是流感季节。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"That's right. How can we all stay healthy?",zh:"没错。我们怎样才能保持健康呢？"},
+          {speaker:"Amy",gender:"female",emoji:"👧",en:"We should eat healthy food.",zh:"我们应该吃健康的食物。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Good. And what else?",zh:"很好。还有什么？"},
+          {speaker:"Zhang Peng",gender:"male",emoji:"👦",en:"We should exercise every day.",zh:"我们应该每天锻炼。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Yes, but please drink enough water.",zh:"是的，但请喝足够的水。"},
+          {speaker:"Chen Jie",gender:"female",emoji:"👧",en:"We should also get enough sleep, Miss White.",zh:"我们还应该保证充足的睡眠，怀特老师。"},
+          {speaker:"Miss White",gender:"female",emoji:"👩‍🏫",en:"Right. And if you don't feel well, you should see a doctor.",zh:"对。而且如果你感觉不舒服，你应该去看医生。"}
+        ]
+      },
+      {
+        title: "Part B · 应该做什么",
+        lines: [
+          {speaker:"Sam",gender:"male",emoji:"👦",en:"Can I watch a TV show now, please?",zh:"请问我现在能看电视吗？"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"No, I'm afraid not.",zh:"不，恐怕不行。"},
+          {speaker:"Sam",gender:"male",emoji:"👦",en:"Can I play on Mum's phone?",zh:"我能玩妈妈的手机吗？"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"No. You shouldn't play on a phone so often.",zh:"不行。你不应该经常玩手机。"},
+          {speaker:"Sam",gender:"male",emoji:"👦",en:"What should I do then?",zh:"那我应该做什么？"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"You should rest your eyes. Let's take a walk.",zh:"你应该让眼睛休息一下。我们去散步吧。"},
+          {speaker:"Sam",gender:"male",emoji:"👦",en:"That's no fun.",zh:"那不好玩。"},
+          {speaker:"Sarah",gender:"female",emoji:"👧",en:"OK. Let's play in the garden then. It's a nice day.",zh:"好吧。那我们去花园玩吧。今天天气很好。"},
+          {speaker:"Sam",gender:"male",emoji:"👦",en:"Great!",zh:"太好了！"}
+        ]
+      }
+    ]
+  },
+  5: {
+    title: "Unit 5 What would you like to eat?",
+    subtitle: "你想吃什么？",
+    scenes: [
+      {
+        title: "Part A · 点餐",
+        lines: [
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"Mum, I'm hungry.",zh:"妈妈，我饿了。"},
+          {speaker:"Mum",gender:"female",emoji:"👩",en:"What would you like to eat?",zh:"你想吃什么？"},
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"I'd like beef and rice.",zh:"我想要牛肉和米饭。"},
+          {speaker:"Mum",gender:"female",emoji:"👩",en:"No problem. Would you like some chicken soup too?",zh:"没问题。你还要来点鸡汤吗？"},
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"Yes, please.",zh:"好的，请给我一些。"},
+          {speaker:"Mum",gender:"female",emoji:"👩",en:"You should also have some salad. Vegetables are good for you.",zh:"你还应该吃些沙拉。蔬菜对你有好处。"},
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"OK. Can I have some ice cream, please?",zh:"好的。我能吃些冰淇淋吗？"},
+          {speaker:"Mum",gender:"female",emoji:"👩",en:"Yes, but just a little.",zh:"可以，但只能吃一点。"},
+          {speaker:"Oliver",gender:"male",emoji:"👦",en:"OK. Thanks, Mum.",zh:"好的。谢谢妈妈。"}
+        ]
+      },
+      {
+        title: "Part B · 最喜欢的水果",
+        lines: [
+          {speaker:"Mrs Green",gender:"female",emoji:"👩‍🏫",en:"What's your favourite fruit, Binbin?",zh:"彬彬，你最喜欢什么水果？"},
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"Coconuts are my favourite.",zh:"椰子是我最喜欢的。"},
+          {speaker:"Mrs Green",gender:"female",emoji:"👩‍🏫",en:"Why do you like coconuts?",zh:"你为什么喜欢椰子？"},
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"Because coconut water is nice. And it's healthy.",zh:"因为椰子水很好喝，而且很健康。"},
+          {speaker:"Mrs Green",gender:"female",emoji:"👩‍🏫",en:"We can also cook delicious meals with coconut.",zh:"我们还可以用椰子做美味的饭菜。"},
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"Yes! And some people make houses with coconut tree leaves.",zh:"是的！而且有些人用椰树叶盖房子。"},
+          {speaker:"Mrs Green",gender:"female",emoji:"👩‍🏫",en:"That's interesting. Where does your coconut come from?",zh:"真有趣。你的椰子是从哪里来的？"},
+          {speaker:"Binbin",gender:"male",emoji:"👦",en:"Hainan! There are many coconut trees there.",zh:"海南！那里有很多椰子树。"}
+        ]
+      }
+    ]
+  },
+  6: {
+    title: "Unit 6 In a nature park",
+    subtitle: "在自然公园",
+    scenes: [
+      {
+        title: "Part A · 自然公园",
+        lines: [
+          {speaker:"Mike's dad",gender:"male",emoji:"👨",en:"Wow! That lake is really lovely!",zh:"哇！那个湖真美！"},
+          {speaker:"Mr Liu",gender:"male",emoji:"👨",en:"Yes. There are also many rivers in the nature park.",zh:"是的。自然公园里还有很多河流。"},
+          {speaker:"Mike's dad",gender:"male",emoji:"👨",en:"Is there a waterfall in the forest?",zh:"森林里有瀑布吗？"},
+          {speaker:"Mr Liu",gender:"male",emoji:"👨",en:"Yes, there is. You'll see a beautiful one today!",zh:"有的。你今天会看到一个很漂亮的瀑布！"},
+          {speaker:"Mike",gender:"male",emoji:"👦",en:"Great! Are there any famous mountains in the nature park?",zh:"太好了！公园里有著名的山吗？"},
+          {speaker:"Mr Liu",gender:"male",emoji:"👨",en:"Yes, there are. We'll visit one tomorrow. There are many flowers too. And there are rabbits!",zh:"有的。我们明天去参观一座。还有很多花，还有兔子！"},
+          {speaker:"Mike",gender:"male",emoji:"👦",en:"That's great!",zh:"太棒了！"}
+        ]
+      },
+      {
+        title: "Part B · 风雨无阻",
+        lines: [
+          {speaker:"Mr Liu",gender:"male",emoji:"👨",en:"I'm sorry. The wind is very strong outside. We can't go on our trip this morning.",zh:"抱歉。外面风很大。我们今天上午不能去旅行了。"},
+          {speaker:"Mike's mum",gender:"female",emoji:"👩",en:"I agree. Strong winds are often dangerous.",zh:"我同意。大风通常很危险。"},
+          {speaker:"Mike's dad",gender:"male",emoji:"👨",en:"There will be heavy rain in the afternoon too. Mike, stay in the hotel with Mum and close the windows. I'll go to buy some umbrellas and raincoats.",zh:"下午还会有大雨。迈克，和妈妈待在酒店里，关好窗户。我去买些雨伞和雨衣。"},
+          {speaker:"Mike's mum",gender:"female",emoji:"👩",en:"There is a small shop in the hotel. You can buy them there.",zh:"酒店里有个小商店。你可以在那里买。"},
+          {speaker:"Mike's dad",gender:"male",emoji:"👨",en:"OK.",zh:"好的。"},
+          {speaker:"Mr Liu",gender:"male",emoji:"👨",en:"Please don't worry! It'll be a fine day tomorrow.",zh:"请别担心！明天会是个好天气。"}
+        ]
+      }
+    ]
+  }
+};
+var currentDialogueUnit = 1;
+var dialogueSpeaking = false;
+function initDialogueVoices(cb){
+  if(window._dialogueVoices){ cb(); return; }
+  var voices = speechSynthesis.getVoices();
+  if(voices.length > 0) {
+    window._dialogueVoices = voices;
+    cb();
+  } else {
+    speechSynthesis.onvoiceschanged = function(){
+      window._dialogueVoices = speechSynthesis.getVoices();
+      speechSynthesis.onvoiceschanged = null;
+      cb();
+    };
+  }
+}
+
+function getVoiceForGender(gender,speakerName){
+  var voices = window._dialogueVoices || speechSynthesis.getVoices();
+  var prefer = gender==='male'
+    ? ['Microsoft Mark','Google UK English Male','Microsoft David','Mark','David','Daniel']
+    : ['Microsoft Zira','Google UK English Female','Microsoft Hazel','Zira','Hazel','Susan'];
+  // Hash speaker name to pick a starting position in the prefer list
+  var hash = 0;
+  var name = speakerName || 'default';
+  for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
+  var startIdx = Math.abs(hash) % prefer.length;
+  // Try from startIdx, wrapping around
+  for(var i=0;i<prefer.length;i++){
+    var idx = (startIdx + i) % prefer.length;
+    for(var j=0;j<voices.length;j++){
+      if(voices[j].name.indexOf(prefer[idx])>=0) return voices[j];
+    }
+  }
+  // Fallback: any en voice matching gender
+  for(var k=0;k<voices.length;k++){
+    if(voices[k].lang.indexOf('en')>=0){
+      var low = voices[k].name.toLowerCase();
+      if(gender==='male' && low.indexOf('female')<0) return voices[k];
+      if(gender==='female' && low.indexOf('female')>=0) return voices[k];
+    }
+  }
+  return voices.find(function(v){return v.lang.indexOf('en')>=0}) || voices[0];
+}
+
+function speakDialogueLine(text,gender,speakerName,callback){
+  initDialogueVoices(function(){
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.voice = getVoiceForGender(gender,speakerName);
+    u.rate = 0.85;
+    u.pitch = gender==='male' ? 0.9 : 1.2;
+    u.volume = 1;
+    u.onend = callback || null;
+    u.onerror = function(){ if(callback) callback(); };
+    speechSynthesis.speak(u);
+  });
+}
+
+function speakDialogueScene(scene,lineIdx){
+  lineIdx = lineIdx || 0;
+  if(lineIdx >= scene.lines.length){ dialogueSpeaking = false; updateDialogueHighlight(-1); return; }
+  dialogueSpeaking = true;
+  updateDialogueHighlight(lineIdx);
+  speakDialogueLine(scene.lines[lineIdx].en, scene.lines[lineIdx].gender, scene.lines[lineIdx].speaker, function(){
+    setTimeout(function(){ speakDialogueScene(scene,lineIdx+1); }, 400);
+  });
+}
+
+function stopDialogue(){
+  speechSynthesis.cancel();
+  dialogueSpeaking = false;
+  updateDialogueHighlight(-1);
+}
+
+function updateDialogueHighlight(idx){
+  var lines = document.querySelectorAll('.dialogue-line');
+  for(var i=0;i<lines.length;i++){ lines[i].classList.remove('playing'); }
+  if(idx>=0 && idx<lines.length){ lines[idx].classList.add('playing'); lines[idx].scrollIntoView({behavior:'smooth',block:'center'}); }
+}
+
+function renderDialogueScreen(u){
+  currentDialogueUnit = u;
+  var data = DIALOGUE_DATA[u];
+  stopDialogue();
+  if(!data){
+    document.getElementById('dialogueTitle').textContent = 'Unit '+u;
+    document.getElementById('dialogueSub').textContent = '课文对话即将上线 🚧';
+    document.getElementById('dialogueContent').innerHTML = '<div class="dialogue-coming"><span class="big-emoji">🚀</span>该单元课文对话正在准备中…</div>';
+    document.getElementById('dialoguePlayBar').innerHTML = '';
+    renderDialogueUnitSelect();
+    return;
+  }
+  document.getElementById('dialogueTitle').textContent = data.title;
+  document.getElementById('dialogueSub').textContent = data.subtitle;
+  renderDialogueUnitSelect();
+
+  var playBar = '';
+  for(var s=0;s<data.scenes.length;s++){
+    playBar += '<button class="play-scene-btn" onclick="event.stopPropagation();stopDialogue();speakDialogueScene(DIALOGUE_DATA['+u+'].scenes['+s+'])">▶ '+data.scenes[s].title.replace(/🎬 |📖 /,'')+'</button>';
+  }
+  playBar += '<button onclick="event.stopPropagation();stopDialogue()">⏹ 停止</button>';
+  document.getElementById('dialoguePlayBar').innerHTML = playBar;
+
+  var html = '';
+  var globalLineIdx = 0;
+  for(var s=0;s<data.scenes.length;s++){
+    var scene = data.scenes[s];
+    html += '<div class="dialogue-scene">';
+    html += '<div class="dialogue-scene-title">'+scene.title+'</div>';
+    for(var l=0;l<scene.lines.length;l++){
+      var line = scene.lines[l];
+      var genderClass = line.gender==='male'?'male':'female';
+      var avatarClass = line.gender==='male'?'male-avatar':'female-avatar';
+      html += '<div class="dialogue-line '+genderClass+'" data-line-idx="'+globalLineIdx+'" data-scene="'+s+'" onclick="event.stopPropagation();stopDialogue();speakDialogueLine(\''+line.en.replace(/'/g,"\\'")+'\',\''+line.gender+'\',\''+line.speaker.replace(/'/g,"\\'")+'\')">';
+      html += '<div class="dialogue-avatar '+avatarClass+'">'+line.emoji+'</div>';
+      html += '<div class="dialogue-bubble">';
+      html += '<div class="speaker">'+line.speaker+'</div>';
+      html += '<div class="text">'+line.en+'</div>';
+      if(line.zh) html += '<div class="zh-text">'+line.zh+'</div>';
+      html += '</div></div>';
+      globalLineIdx++;
+    }
+    html += '</div>';
+  }
+  document.getElementById('dialogueContent').innerHTML = html;
+}
+
+function renderDialogueUnitSelect(){
+  var sel = document.getElementById('dialogueUnitSelect');
+  var html = '';
+  for(var u=1;u<=6;u++){
+    html += '<button class="'+(u===currentDialogueUnit?'active':'')+'" onclick="navigateToDialogue('+u+')">Unit '+u+'</button>';
+  }
+  sel.innerHTML = html;
+}
+
+function navigateToDialogue(u){
+  currentDialogueUnit = u;
+  navigateTo('dialogue');
+  renderDialogueScreen(u);
+}
+
+// 扩展 navigateTo 支持 dialogue
+var _origNavigateTo = navigateTo;
+navigateTo = function(screen){
+  if(screen==='dialogue'){
+    var screens = document.querySelectorAll('.screen');
+    for(var i=0;i<screens.length;i++) screens[i].classList.remove('active');
+    document.getElementById('screen-dialogue').classList.add('active');
+    renderDialogueScreen(currentDialogueUnit);
+    return;
+  }
+  _origNavigateTo(screen);
+};
+// ============================================================
+//  初始化
+// ============================================================
+(function init(){
+  var rank=calcRank(G);
+  document.getElementById('welcomeRank').textContent='⭐ '+getRankName(rank);
+  // pre-check: if any unit was in progress, restore context
+  renderStarMap();
+})();
+</script>
+</body>
+</html>
+
+
+
