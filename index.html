@@ -1645,20 +1645,45 @@ function initDialogueVoices(cb){
 }
 
 function getVoiceForGender(gender,speakerName){
-  var voices = window._dialogueVoices || speechSynthesis.getVoices();
-  var prefer = gender==='male' ? ['Mark','David','Daniel','Google UK English Male','Microsoft Mark'] : ['Zira','Hazel','Susan','Google UK English Female','Microsoft Zira'];
-  for(var i=0;i<prefer.length;i++){
-    for(var j=0;j<voices.length;j++){
-      if(voices[j].name.indexOf(prefer[i])>=0) return voices[j];
+  if(!window._voicePool) window._voicePool = {};
+  if(window._voicePool[gender]){
+    var pool = window._voicePool[gender];
+  } else {
+    var voices = window._dialogueVoices || speechSynthesis.getVoices();
+    var prefer = gender==='male'
+      ? ['Microsoft Mark','Microsoft David','Mark','David','Google UK English Male','Daniel','James']
+      : ['Microsoft Zira','Microsoft Hazel','Zira','Hazel','Google UK English Female','Susan','Catherine'];
+    var pool = [];
+    for(var i=0;i<prefer.length;i++){
+      for(var j=0;j<voices.length;j++){
+        if(voices[j].name.indexOf(prefer[i])>=0){
+          var dup = false;
+          for(var p=0;p<pool.length;p++){ if(pool[p]===voices[j]){ dup=true; break; } }
+          if(!dup) pool.push(voices[j]);
+        }
+      }
     }
-  }
-  for(var k=0;k<voices.length;k++){
-    if(voices[k].lang.indexOf('en')>=0){
-      if(gender==='male' && voices[k].name.toLowerCase().indexOf('female')<0) return voices[k];
-      if(gender==='female' && voices[k].name.toLowerCase().indexOf('female')>=0) return voices[k];
+    // Fallback: any en voice matching gender by known names
+    if(pool.length===0){
+      var maleNames = ['david','mark','james','daniel','peter','guy','tom'];
+      var femaleNames = ['zira','hazel','susan','catherine','linda','mary','eva','laura','sara'];
+      var targetNames = gender==='male' ? maleNames : femaleNames;
+      var oppositeNames = gender==='male' ? femaleNames : maleNames;
+      for(var k=0;k<voices.length;k++){
+        if(voices[k].lang.indexOf('en')<0) continue;
+        var low = voices[k].name.toLowerCase();
+        var isOpposite = false;
+        for(var c=0;c<oppositeNames.length;c++){ if(low.indexOf(oppositeNames[c])>=0){ isOpposite=true; break; } }
+        if(!isOpposite) pool.push(voices[k]);
+      }
     }
+    if(pool.length===0) pool.push(voices.find(function(v){return v.lang.indexOf('en')>=0}) || voices[0]);
+    window._voicePool[gender] = pool;
   }
-  return voices.find(function(v){return v.lang.indexOf('en')>=0}) || voices[0];
+  var hash = 0;
+  var name = speakerName || 'default';
+  for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
+  return pool[Math.abs(hash) % pool.length];
 }
 
 function speakDialogueLine(text,gender,speakerName,callback){
