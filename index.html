@@ -1656,6 +1656,8 @@ function getVoiceForGender(gender,speakerName){
     var pool = [];
     for(var i=0;i<prefer.length;i++){
       for(var j=0;j<voices.length;j++){
+        // For female: only use localService voices (more reliable)
+        if(gender==='female' && !voices[j].localService) continue;
         if(voices[j].name.indexOf(prefer[i])>=0){
           var dup = false;
           for(var p=0;p<pool.length;p++){ if(pool[p]===voices[j]){ dup=true; break; } }
@@ -1667,19 +1669,24 @@ function getVoiceForGender(gender,speakerName){
     if(pool.length===0){
       var maleNames = ['david','mark','james','daniel','peter','guy','tom'];
       var femaleNames = ['zira','hazel','susan','catherine','linda','mary','eva','laura','sara'];
-      var targetNames = gender==='male' ? maleNames : femaleNames;
       var oppositeNames = gender==='male' ? femaleNames : maleNames;
       for(var k=0;k<voices.length;k++){
         if(voices[k].lang.indexOf('en')<0) continue;
+        // For female: only localService
+        if(gender==='female' && !voices[k].localService) continue;
         var low = voices[k].name.toLowerCase();
         var isOpposite = false;
         for(var c=0;c<oppositeNames.length;c++){ if(low.indexOf(oppositeNames[c])>=0){ isOpposite=true; break; } }
         if(!isOpposite) pool.push(voices[k]);
       }
     }
+    // If still no female voice, return null (browser default will be used)
+    if(gender==='female' && pool.length===0){ window._voicePool[gender] = [null]; return null; }
     if(pool.length===0) pool.push(voices.find(function(v){return v.lang.indexOf('en')>=0}) || voices[0]);
     window._voicePool[gender] = pool;
   }
+  // null means use browser default
+  if(pool[0]===null) return null;
   var hash = 0;
   var name = speakerName || 'default';
   for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
@@ -1690,7 +1697,8 @@ function speakDialogueLine(text,gender,speakerName,callback){
   initDialogueVoices(function(){
     speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
-    u.voice = getVoiceForGender(gender,speakerName);
+    var voice = getVoiceForGender(gender,speakerName);
+    if(voice) u.voice = voice;
     u.rate = 0.85;
     // Different pitch per speaker for voice differentiation
     var hash = 0;
