@@ -1648,6 +1648,7 @@ function getVoiceForGender(gender,speakerName){
   if(!window._voicePool) window._voicePool = {};
   if(window._voicePool[gender]){
     var pool = window._voicePool[gender];
+    if(pool[0]===null) return null;
   } else {
     var voices = window._dialogueVoices || speechSynthesis.getVoices();
     var prefer = gender==='male'
@@ -1656,7 +1657,6 @@ function getVoiceForGender(gender,speakerName){
     var pool = [];
     for(var i=0;i<prefer.length;i++){
       for(var j=0;j<voices.length;j++){
-        // For female: only use localService voices (more reliable)
         if(gender==='female' && !voices[j].localService) continue;
         if(voices[j].name.indexOf(prefer[i])>=0){
           var dup = false;
@@ -1665,28 +1665,16 @@ function getVoiceForGender(gender,speakerName){
         }
       }
     }
-    // Fallback: any en voice matching gender by known names
+    if(gender==='female' && pool.length===0){ window._voicePool[gender] = [null]; return null; }
     if(pool.length===0){
-      var maleNames = ['david','mark','james','daniel','peter','guy','tom'];
-      var femaleNames = ['zira','hazel','susan','catherine','linda','mary','eva','laura','sara'];
-      var oppositeNames = gender==='male' ? femaleNames : maleNames;
       for(var k=0;k<voices.length;k++){
         if(voices[k].lang.indexOf('en')<0) continue;
-        // For female: only localService
-        if(gender==='female' && !voices[k].localService) continue;
-        var low = voices[k].name.toLowerCase();
-        var isOpposite = false;
-        for(var c=0;c<oppositeNames.length;c++){ if(low.indexOf(oppositeNames[c])>=0){ isOpposite=true; break; } }
-        if(!isOpposite) pool.push(voices[k]);
+        pool.push(voices[k]);
       }
     }
-    // If still no female voice, return null (browser default will be used)
-    if(gender==='female' && pool.length===0){ window._voicePool[gender] = [null]; return null; }
-    if(pool.length===0) pool.push(voices.find(function(v){return v.lang.indexOf('en')>=0}) || voices[0]);
+    if(pool.length===0) pool.push(voices[0]);
     window._voicePool[gender] = pool;
   }
-  // null means use browser default
-  if(pool[0]===null) return null;
   var hash = 0;
   var name = speakerName || 'default';
   for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
