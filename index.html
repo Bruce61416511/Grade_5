@@ -1660,13 +1660,24 @@ function getVoiceForGender(gender,speakerName){
       }
     }
   }
-  // Fallback: any en voice matching gender
+  // Fallback: any en voice matching gender (by known names)
   if(pool.length===0){
+    var maleNames = ['david','mark','james','daniel','peter','guy','tom'];
+    var femaleNames = ['zira','hazel','susan','catherine','linda','mary','eva','laura','sara','heather','karen'];
+    var checkList = gender==='male' ? maleNames : femaleNames;
     for(var k=0;k<voices.length;k++){
-      if(voices[k].lang.indexOf('en')>=0){
-        var low = voices[k].name.toLowerCase();
-        if(gender==='male' && low.indexOf('female')<0) pool.push(voices[k]);
-        if(gender==='female' && low.indexOf('female')>=0) pool.push(voices[k]);
+      if(voices[k].lang.indexOf('en')<0) continue;
+      var low = voices[k].name.toLowerCase();
+      // For male: must NOT match female names
+      // For female: must match a female name
+      var isMatch = false;
+      for(var c=0;c<checkList.length;c++){ if(low.indexOf(checkList[c])>=0){ isMatch=true; break; } }
+      if(gender==='male'){
+        var isFemale=false;
+        for(var c2=0;c2<femaleNames.length;c2++){ if(low.indexOf(femaleNames[c2])>=0){ isFemale=true; break; } }
+        if(!isFemale) pool.push(voices[k]);
+      } else {
+        if(isMatch) pool.push(voices[k]);
       }
     }
   }
