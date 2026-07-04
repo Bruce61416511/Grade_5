@@ -1684,21 +1684,37 @@ function getVoiceForGender(gender,speakerName){
 function speakDialogueLine(text,gender,speakerName,callback){
   initDialogueVoices(function(){
     speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(text);
-    var voice = getVoiceForGender(gender,speakerName);
-    if(voice) u.voice = voice;
-    u.rate = 0.85;
-    // Different pitch per speaker for voice differentiation
-    var hash = 0;
-    var name = speakerName || 'default';
-    for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
-    var base = gender==='male' ? 0.75 : 1.05;
-    var offset = (Math.abs(hash) % 5) * 0.10;
-    u.pitch = base + offset;
-    u.volume = 1;
-    u.onend = callback || null;
-    u.onerror = function(){ if(callback) callback(); };
-    speechSynthesis.speak(u);
+    var pool = window._voicePool ? window._voicePool[gender] : null;
+    if(pool && pool[0]===null) pool = null;
+    var tryIdx = 0;
+    function trySpeak(){
+      var u = new SpeechSynthesisUtterance(text);
+      if(pool && tryIdx < pool.length){
+        u.voice = pool[tryIdx];
+      } else {
+        var v = getVoiceForGender(gender,speakerName);
+        if(v) u.voice = v;
+      }
+      u.rate = 0.85;
+      var hash = 0;
+      var name = speakerName || 'default';
+      for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
+      var base = gender==='male' ? 0.75 : 1.05;
+      u.pitch = base + (Math.abs(hash) % 5) * 0.10;
+      u.volume = 1;
+      u.onend = callback || null;
+      u.onerror = function(e){
+        if(e && (e.error==='canceled'||e.error==='interrupted')) return;
+        tryIdx++;
+        if(pool && tryIdx < pool.length){
+          trySpeak();
+        } else {
+          if(callback) callback();
+        }
+      };
+      speechSynthesis.speak(u);
+    }
+    trySpeak();
   });
 }
 
