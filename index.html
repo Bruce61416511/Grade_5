@@ -1646,47 +1646,19 @@ function initDialogueVoices(cb){
 
 function getVoiceForGender(gender,speakerName){
   var voices = window._dialogueVoices || speechSynthesis.getVoices();
-  var prefer = gender==='male'
-    ? ['Microsoft Mark','Google UK English Male','Mark','Microsoft David','David','Daniel','James']
-    : ['Microsoft Zira','Google UK English Female','Zira','Microsoft Hazel','Hazel','Susan','Catherine'];
-  // Collect unique matching voices in preference order
-  var pool = [];
+  var prefer = gender==='male' ? ['Mark','David','Daniel','Google UK English Male','Microsoft Mark'] : ['Zira','Hazel','Susan','Google UK English Female','Microsoft Zira'];
   for(var i=0;i<prefer.length;i++){
     for(var j=0;j<voices.length;j++){
-      if(voices[j].name.indexOf(prefer[i])>=0){
-        var already = false;
-        for(var p=0;p<pool.length;p++){ if(pool[p]===voices[j]){ already=true; break; } }
-        if(!already) pool.push(voices[j]);
-      }
+      if(voices[j].name.indexOf(prefer[i])>=0) return voices[j];
     }
   }
-  // Fallback: any en voice matching gender (by known names)
-  if(pool.length===0){
-    var maleNames = ['david','mark','james','daniel','peter','guy','tom'];
-    var femaleNames = ['zira','hazel','susan','catherine','linda','mary','eva','laura','sara','heather','karen'];
-    var checkList = gender==='male' ? maleNames : femaleNames;
-    for(var k=0;k<voices.length;k++){
-      if(voices[k].lang.indexOf('en')<0) continue;
-      var low = voices[k].name.toLowerCase();
-      // For male: must NOT match female names
-      // For female: must match a female name
-      var isMatch = false;
-      for(var c=0;c<checkList.length;c++){ if(low.indexOf(checkList[c])>=0){ isMatch=true; break; } }
-      if(gender==='male'){
-        var isFemale=false;
-        for(var c2=0;c2<femaleNames.length;c2++){ if(low.indexOf(femaleNames[c2])>=0){ isFemale=true; break; } }
-        if(!isFemale) pool.push(voices[k]);
-      } else {
-        if(isMatch) pool.push(voices[k]);
-      }
+  for(var k=0;k<voices.length;k++){
+    if(voices[k].lang.indexOf('en')>=0){
+      if(gender==='male' && voices[k].name.toLowerCase().indexOf('female')<0) return voices[k];
+      if(gender==='female' && voices[k].name.toLowerCase().indexOf('female')>=0) return voices[k];
     }
   }
-  if(pool.length===0) pool.push(voices.find(function(v){return v.lang.indexOf('en')>=0}) || voices[0]);
-  // Hash speaker name to pick from pool
-  var hash = 0;
-  var name = speakerName || 'default';
-  for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
-  return pool[Math.abs(hash) % pool.length];
+  return voices.find(function(v){return v.lang.indexOf('en')>=0}) || voices[0];
 }
 
 function speakDialogueLine(text,gender,speakerName,callback){
@@ -1695,12 +1667,13 @@ function speakDialogueLine(text,gender,speakerName,callback){
     var u = new SpeechSynthesisUtterance(text);
     u.voice = getVoiceForGender(gender,speakerName);
     u.rate = 0.85;
-    // Pitch varies by speaker: males 0.75-1.05, females 1.05-1.35
+    // Different pitch per speaker for voice differentiation
     var hash = 0;
     var name = speakerName || 'default';
     for(var h=0;h<name.length;h++){ hash = ((hash<<5)-hash)+name.charCodeAt(h); hash |= 0; }
-    var offset = (Math.abs(hash) % 7) / 20; // 0 to 0.3 in steps of 0.05
-    u.pitch = gender==='male' ? 0.75 + offset : 1.05 + offset;
+    var base = gender==='male' ? 0.85 : 1.15;
+    var offset = (Math.abs(hash) % 7) * 0.05;
+    u.pitch = base + offset;
     u.volume = 1;
     u.onend = callback || null;
     u.onerror = function(){ if(callback) callback(); };
